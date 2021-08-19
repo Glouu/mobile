@@ -1,11 +1,21 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:gloou/screens/log_in/log_in.dart';
 import 'package:gloou/screens/verify_token/verify_token.dart';
+import 'package:gloou/shared/api_environment/api_utils.dart';
+import 'package:gloou/shared/models/signupModel/signupModel.dart';
+import 'package:gloou/shared/models/signupModel/signupresponseModel/getsignupresponsemainModel.dart';
+import 'package:gloou/shared/secure_storage/secure_storage.dart';
 import 'package:gloou/widgets/button_widget.dart';
 import 'package:gloou/widgets/onboarding_title_widget.dart';
 import 'package:gloou/widgets/secure_input_widget.dart';
 import 'package:gloou/widgets/text_button_widget.dart';
 import 'package:gloou/widgets/text_widget.dart';
+import 'package:gloou/widgets/toast_widget.dart';
 import 'package:keyboard_dismisser/keyboard_dismisser.dart';
+import 'package:http/http.dart' as http;
 
 class SignUp extends StatefulWidget {
   const SignUp({Key? key}) : super(key: key);
@@ -20,8 +30,20 @@ class _SignUpState extends State<SignUp> {
   final nameController = TextEditingController();
   final usernameController = TextEditingController();
   final passwordController = TextEditingController();
+  bool isSubmit = false;
+
+  late SignupModel signupModel;
+
+  late GetsignupresponsemainModel getsignupresponsemainModel;
+
+  late String status;
+  late String message;
+
+  final toast = FToast();
 
   bool isPasswordVisible = true;
+
+  final SecureStorage secureStorage = SecureStorage();
 
   final FocusNode emailNode = FocusNode();
   final FocusNode nameNode = FocusNode();
@@ -32,6 +54,7 @@ class _SignUpState extends State<SignUp> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    toast.init(context);
 
     emailOrPhoneController.addListener(() {
       setState(() {});
@@ -147,24 +170,20 @@ class _SignUpState extends State<SignUp> {
                         ),
                   ButtonWidget(
                     title: 'Sign Up',
-                    onClick: () {
-                      FocusScope.of(context).requestFocus(FocusNode());
-
-                      final isValid = signUpFormKey.currentState!.validate();
-
-                      if (isValid) {
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => VerifyToken()),
-                        );
-                      }
-                    },
+                    isButtonActive: isSubmit,
+                    onClick: onSubmit,
                   ),
                   TextButtonWidget(
                     title: 'I have an account',
+                    fontSize: 18,
                     onClick: () {
                       FocusScope.of(context).requestFocus(FocusNode());
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => LogIn(),
+                        ),
+                      );
                     },
                   )
                 ],
@@ -174,5 +193,80 @@ class _SignUpState extends State<SignUp> {
         ),
       ),
     );
+  }
+
+  void displayToast() => toast.showToast(
+        child: ToastMessage(status: status, message: message),
+        gravity: ToastGravity.TOP,
+      );
+
+  void onSubmit() async {
+    FocusScope.of(context).requestFocus(FocusNode());
+    final currentState = signUpFormKey.currentState;
+    final isValid;
+    if (currentState != null) {
+      isValid = currentState.validate();
+    } else {
+      isValid = false;
+    }
+    signupModel = SignupModel(
+      emailOrPhone: emailOrPhoneController.text,
+      password: passwordController.text,
+      name: nameController.text,
+      userName: usernameController.text,
+    );
+    var url = Uri.parse(ApiUtils.API_URL + '/User/Register');
+    var httpClient = http.Client();
+    var response = await httpClient.post(
+      url,
+      body: jsonEncode(signupModel.toJson()),
+      headers: Header.noBearerHeader,
+    );
+    if (response.statusCode == 200) {
+      var jsonResponse = jsonDecode(response.body);
+
+      setState(() {
+        status = 'success';
+        message = 'Welcome to Gloou';
+        getsignupresponsemainModel =
+            GetsignupresponsemainModel.fromJson(jsonResponse);
+
+        secureStorage.writeSecureData(
+          'id',
+          getsignupresponsemainModel.data.id,
+        );
+        secureStorage.writeSecureData(
+            'isEmail', getsignupresponsemainModel.data.isEmail.toString());
+        if (getsignupresponsemainModel.data.isEmail == true) {
+          secureStorage.writeSecureData(
+            'email',
+            getsignupresponsemainModel.data.email,
+          );
+        } else {
+          secureStorage.writeSecureData(
+            'phoneNumber',
+            getsignupresponsemainModel.data.phoneNumber,
+          );
+        }
+      });
+
+      displayToast();
+
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => VerifyToken(),
+        ),
+      );
+    } else {
+      var jsonError = jsonDecode(response.body);
+
+      setState(() {
+        isSubmit = false;
+        status = 'error';
+        message = jsonError['error'];
+        displayToast();
+      });
+    }
   }
 }

@@ -30,7 +30,7 @@ class SliderPage extends StatelessWidget {
           Text(
             title,
             style: TextStyle(
-                fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
+                fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white,),
           ),
           SizedBox(
             height: 20,

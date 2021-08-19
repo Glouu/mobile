@@ -20,7 +20,7 @@ class _FirstTimeSplashState extends State<FirstTimeSplash> {
 
     Timer(
       Duration(milliseconds: 2000),
-      () => Navigator.push(
+      () => Navigator.pushReplacement(
           context,
           MaterialPageRoute(
             builder: (context) => Welcome(),

@@ -15,6 +15,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         fontFamily: 'Fellix',
         primarySwatch: themeMainColor,
+        visualDensity: VisualDensity.adaptivePlatformDensity
       ),
       home: SplashView(),
     );

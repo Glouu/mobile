@@ -3,20 +3,22 @@ import 'package:flutter/material.dart';
 class ButtonWidget extends StatelessWidget {
   final String title;
   final VoidCallback onClick;
+  final bool isButtonActive;
 
-  const ButtonWidget({
-    Key? key,
-    required this.title,
-    required this.onClick,
-  }) : super(key: key);
+  const ButtonWidget(
+      {Key? key,
+      required this.title,
+      required this.onClick,
+      required this.isButtonActive})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) => RaisedButton(
-        onPressed: onClick,
+        onPressed: isButtonActive ? null : onClick,
         child: Text(
           title,
           style: TextStyle(
-            fontSize: 18,
+            fontSize: 16,
             fontFamily: 'Fellix-Bold',
             fontWeight: FontWeight.bold,
           ),
@@ -27,6 +29,8 @@ class ButtonWidget extends StatelessWidget {
           vertical: 18,
         ),
         textColor: Colors.white,
+        disabledColor: Theme.of(context).primaryColor.withOpacity(0.5),
+        disabledTextColor: Colors.white.withOpacity(0.5),
       );
 
   // Widget buildButton() =>

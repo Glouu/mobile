@@ -2,11 +2,10 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:gloou/screens/date_of_birth/date_of_birth.dart';
+import 'package:gloou/screens/forget_password/new_password.dart';
 import 'package:gloou/shared/api_environment/api_utils.dart';
-import 'package:gloou/shared/models/otpModel/otpModel.dart';
-import 'package:gloou/shared/models/otpModel/resendotpModel.dart';
-import 'package:gloou/shared/models/signupModel/signupresponseModel/getsignupresponsemainModel.dart';
+import 'package:gloou/shared/models/forgetpasswordModel/resetpasswordModel.dart';
+import 'package:gloou/shared/models/forgetpasswordModel/resetpasswordotpModel.dart';
 import 'package:gloou/shared/secure_storage/secure_storage.dart';
 import 'package:gloou/widgets/button_widget.dart';
 import 'package:gloou/widgets/light_button_widget.dart';
@@ -16,33 +15,31 @@ import 'package:gloou/widgets/toast_widget.dart';
 import 'package:keyboard_dismisser/keyboard_dismisser.dart';
 import 'package:http/http.dart' as http;
 
-class VerifyToken extends StatefulWidget {
-  const VerifyToken({Key? key}) : super(key: key);
+class ResetPasswordOtp extends StatefulWidget {
+  const ResetPasswordOtp({Key? key}) : super(key: key);
 
   @override
-  _VerifyTokenState createState() => _VerifyTokenState();
+  _ResetPasswordOtpState createState() => _ResetPasswordOtpState();
 }
 
-class _VerifyTokenState extends State<VerifyToken> {
-  final tokenFormKey = GlobalKey<FormState>();
-  final resendKey = GlobalKey<FormState>();
-  final tokenController = TextEditingController();
+class _ResetPasswordOtpState extends State<ResetPasswordOtp> {
+  final resetPasswordOtpFormKey = GlobalKey<FormState>();
+  final resendPasswordOtpKey = GlobalKey<FormState>();
+  final otpController = TextEditingController();
   bool isSubmit = false;
-  late String subTitle;
-  late String contact;
-  late String id;
-
-  late OtpModel otpModel;
-  late ResendOtpModel resendotpModel;
-
-  late GetsignupresponsemainModel getsignupresponsemainModel;
 
   final SecureStorage secureStorage = SecureStorage();
 
-  final FocusNode tokenNode = FocusNode();
+  final FocusNode otpNode = FocusNode();
+
+  late ResetpasswordotpModel resetpasswordotpModel;
+
+  late ResetpasswordModel resetpasswordModel;
 
   late String status;
   late String message;
+  late String subTitle;
+  late String emailOrPhone;
 
   final toast = FToast();
 
@@ -53,21 +50,16 @@ class _VerifyTokenState extends State<VerifyToken> {
     super.initState();
     toast.init(context);
 
-    tokenController.addListener(() {
+    otpController.addListener(() {
       setState(() {});
     });
   }
 
   init() async {
-    id = await secureStorage.readSecureData('id');
-    if (await secureStorage.readSecureData('isEmail') == 'true') {
-      contact = await secureStorage.readSecureData('email');
-    } else {
-      contact = await secureStorage.readSecureData('phoneNumber');
-    }
+    emailOrPhone = await secureStorage.readSecureData('emailOrPhone');
     setState(() {
       subTitle =
-          'Enter the OTP we sent to $contact to verify your GLOOU account.';
+          'Enter the OTP we sent to $emailOrPhone to reset your password.';
     });
   }
 
@@ -80,7 +72,7 @@ class _VerifyTokenState extends State<VerifyToken> {
         child: SafeArea(
           child: Center(
             child: Form(
-              key: tokenFormKey,
+              key: resetPasswordOtpFormKey,
               child: ListView(
                 padding: EdgeInsets.all(20),
                 children: [
@@ -88,7 +80,7 @@ class _VerifyTokenState extends State<VerifyToken> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       OnboardingTitle(
-                        title: 'Verify You Account',
+                        title: 'Reset your Password',
                       ),
                       SizedBox(
                         height: MediaQuery.of(context).size.height / 30,
@@ -107,8 +99,8 @@ class _VerifyTokenState extends State<VerifyToken> {
                         height: MediaQuery.of(context).size.height / 20,
                       ),
                       NumberWidget(
-                        textInput: tokenController,
-                        textNode: tokenNode,
+                        textInput: otpController,
+                        textNode: otpNode,
                         numberMax: 4,
                         labelTitle: 'One-time code',
                         validationMsg: (value) {
@@ -126,7 +118,7 @@ class _VerifyTokenState extends State<VerifyToken> {
                       ),
                       Center(
                         child: LightButtonWidget(
-                          buttonKey: resendKey,
+                          buttonKey: resendPasswordOtpKey,
                           title: 'Resend code',
                           onClick: () {
                             onResendOtp();
@@ -144,11 +136,11 @@ class _VerifyTokenState extends State<VerifyToken> {
                     ],
                   ),
                   ButtonWidget(
-                    title: 'Continue',
+                    title: 'Reset',
                     isButtonActive: isSubmit,
                     onClick: () {
                       final isValid;
-                      final currentState = tokenFormKey.currentState;
+                      final currentState = resetPasswordOtpFormKey.currentState;
                       if (currentState != null) {
                         isValid = currentState.validate();
                       } else {
@@ -175,12 +167,14 @@ class _VerifyTokenState extends State<VerifyToken> {
 
   void onResendOtp() async {
     FocusScope.of(context).requestFocus(FocusNode());
-    resendotpModel = ResendOtpModel(id: id);
-    var url = Uri.parse(ApiUtils.API_URL + '/User/ResendOTP');
+    resetpasswordModel = ResetpasswordModel(
+      emailOrPhone: emailOrPhone,
+    );
+    var url = Uri.parse(ApiUtils.API_URL + '/User/PasswordReset/Start');
     var httpClient = http.Client();
     var response = await httpClient.post(
       url,
-      body: jsonEncode(resendotpModel.toJson()),
+      body: jsonEncode(resetpasswordModel.toJson()),
       headers: Header.noBearerHeader,
     );
     if (response.statusCode == 200) {
@@ -188,30 +182,7 @@ class _VerifyTokenState extends State<VerifyToken> {
 
       setState(() {
         status = 'success';
-        message = 'Lets Go';
-        getsignupresponsemainModel =
-            GetsignupresponsemainModel.fromJson(jsonResponse);
-
-        secureStorage.writeSecureData(
-          'id',
-          getsignupresponsemainModel.data.id,
-        );
-
-        secureStorage.writeSecureData(
-          'isEmail',
-          getsignupresponsemainModel.data.isEmail.toString(),
-        );
-        if (getsignupresponsemainModel.data.isEmail == true) {
-          secureStorage.writeSecureData(
-            'email',
-            getsignupresponsemainModel.data.email,
-          );
-        } else {
-          secureStorage.writeSecureData(
-            'phoneNumber',
-            getsignupresponsemainModel.data.phoneNumber,
-          );
-        }
+        message = 'OTP sent to $emailOrPhone';
       });
 
       displayToast();
@@ -229,16 +200,16 @@ class _VerifyTokenState extends State<VerifyToken> {
   void onSubmitOtp() async {
     FocusScope.of(context).requestFocus(FocusNode());
 
-    otpModel = OtpModel(
-      id: id,
-      otp: tokenController.text,
+    resetpasswordotpModel = ResetpasswordotpModel(
+      emailOrPhone: emailOrPhone,
+      otp: otpController.text,
     );
 
-    var url = Uri.parse(ApiUtils.API_URL + '/User/ConfirmOTP');
+    var url = Uri.parse(ApiUtils.API_URL + '/User/PasswordReset/VerifyOTP');
     var httpClient = http.Client();
     var response = await httpClient.post(
       url,
-      body: jsonEncode(otpModel.toJson()),
+      body: jsonEncode(resetpasswordotpModel.toJson()),
       headers: Header.noBearerHeader,
     );
     if (response.statusCode == 200) {
@@ -246,25 +217,15 @@ class _VerifyTokenState extends State<VerifyToken> {
 
       setState(() {
         status = 'success';
-        message = 'Welcome to Gloou';
+        message = 'You are doing well';
 
-        secureStorage.writeSecureData(
-          'token',
-          jsonResponse['data']['token'],
-        );
-
-        secureStorage.writeSecureData(
-          'userId',
-          jsonResponse['data']['user']['id'],
-        );
+        displayToast();
       });
-
-      displayToast();
 
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (context) => DateOfBirth(),
+          builder: (context) => NewPassword(),
         ),
       );
     } else {

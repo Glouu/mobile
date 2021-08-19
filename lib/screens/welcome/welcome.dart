@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:gloou/screens/log_in/log_in.dart';
 import 'package:gloou/screens/sign_up/sign_up.dart';
 import 'package:gloou/shared/colors/colors.dart';
+import 'package:gloou/shared/secure_storage/secure_storage.dart';
 import 'package:gloou/widgets/slider_widget.dart';
 
 class Welcome extends StatefulWidget {
@@ -13,6 +15,8 @@ class Welcome extends StatefulWidget {
 class _WelcomeState extends State<Welcome> {
   int _currentPage = 0;
   PageController _pageController = PageController();
+
+  final SecureStorage secureStorage = SecureStorage();
 
   List _pages = [
     SliderPage(
@@ -64,8 +68,16 @@ class _WelcomeState extends State<Welcome> {
                 InkWell(
                   onTap: () {
                     (_currentPage == (_pages.length - 1))
-                        ? Navigator.pushReplacement(context,
-                            MaterialPageRoute(builder: (context) => SignUp()))
+                        ? () {
+                            secureStorage.writeSecureData(
+                              'isUsingPlatform',
+                              'true',
+                            );
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(builder: (context) => LogIn()),
+                            );
+                          }()
                         : _pageController.nextPage(
                             duration: Duration(milliseconds: 800),
                             curve: Curves.easeInOutQuint,

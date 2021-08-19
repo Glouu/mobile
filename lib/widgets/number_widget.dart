@@ -4,7 +4,7 @@ class NumberWidget extends StatelessWidget {
   final TextEditingController textInput;
   final FocusNode textNode;
   final String labelTitle;
-  final String validationMsg;
+  final FormFieldValidator validationMsg;
   final int numberMax;
   const NumberWidget({
     Key? key,
@@ -22,15 +22,7 @@ class NumberWidget extends StatelessWidget {
       focusNode: textNode,
       maxLength: numberMax,
       autovalidateMode: AutovalidateMode.onUserInteraction,
-      validator: (value) {
-        if (value!.isEmpty) {
-          return 'Please enter OTP';
-        } else if (value.length < numberMax) {
-          return validationMsg;
-        } else {
-          return null;
-        }
-      },
+      validator: validationMsg,
       keyboardType: TextInputType.number,
       decoration: InputDecoration(
         labelText: labelTitle,

@@ -3,9 +3,14 @@ import 'package:flutter/material.dart';
 class TextButtonWidget extends StatelessWidget {
   final String title;
   final VoidCallback onClick;
+  final double fontSize;
 
-  const TextButtonWidget({Key? key, required this.title, required this.onClick})
-      : super(key: key);
+  const TextButtonWidget({
+    Key? key,
+    required this.title,
+    required this.onClick,
+    required this.fontSize,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) => TextButton(
@@ -13,9 +18,10 @@ class TextButtonWidget extends StatelessWidget {
       child: Text(
         title,
         style: TextStyle(
-            fontSize: 18,
-            fontFamily: 'Fellix-Bold',
-            fontWeight: FontWeight.bold,
-            color: Colors.black),
+          fontSize: fontSize,
+          fontFamily: 'Fellix-Bold',
+          fontWeight: FontWeight.bold,
+          color: Colors.black,
+        ),
       ));
 }
