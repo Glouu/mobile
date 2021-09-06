@@ -5,8 +5,10 @@ class TextWidget extends StatelessWidget {
   final FocusNode textNode;
   final String labelTitle;
   final FormFieldValidator validationMsg;
+  final int maxLines;
   const TextWidget({
     Key? key,
+    this.maxLines = 1,
     required this.textInput,
     required this.textNode,
     required this.labelTitle,
@@ -20,10 +22,12 @@ class TextWidget extends StatelessWidget {
       focusNode: textNode,
       validator: validationMsg,
       autovalidateMode: AutovalidateMode.onUserInteraction,
+      maxLines: maxLines,
       decoration: InputDecoration(
         labelText: labelTitle,
         border: OutlineInputBorder(),
         labelStyle: TextStyle(),
+        focusedBorder: OutlineInputBorder(),
       ),
     );
   }

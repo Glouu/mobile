@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:gloou/screens/log_in/log_in.dart';
-import 'package:gloou/screens/sign_up/sign_up.dart';
 import 'package:gloou/shared/colors/colors.dart';
 import 'package:gloou/shared/secure_storage/secure_storage.dart';
 import 'package:gloou/widgets/slider_widget.dart';

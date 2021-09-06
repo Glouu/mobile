@@ -97,9 +97,9 @@ class _SignUpState extends State<SignUp> {
                     textNode: emailNode,
                     labelTitle: 'Email or Phone number',
                     validationMsg: (value) {
-                      final pattern =
-                          r'(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)';
-                      final regExp = RegExp(pattern);
+                      // final pattern =
+                      //     r'(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)';
+                      // final regExp = RegExp(pattern);
                       if (value.isEmpty) {
                         return 'Please Enter Email or Phone Number';
                       } else {

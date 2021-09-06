@@ -42,6 +42,7 @@ class _GeneralHomeState extends State<GeneralHome> {
       extendBodyBehindAppBar: true,
       drawer: NavigationDrawer(),
       appBar: AppBar(
+        centerTitle: true,
         backgroundColor: Colors.transparent,
         elevation: 0.0,
         iconTheme: IconThemeData(color: Colors.black),

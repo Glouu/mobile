@@ -178,7 +178,7 @@ class _ResetPasswordOtpState extends State<ResetPasswordOtp> {
       headers: Header.noBearerHeader,
     );
     if (response.statusCode == 200) {
-      var jsonResponse = jsonDecode(response.body);
+      // var jsonResponse = jsonDecode(response.body);
 
       setState(() {
         status = 'success';
@@ -213,7 +213,7 @@ class _ResetPasswordOtpState extends State<ResetPasswordOtp> {
       headers: Header.noBearerHeader,
     );
     if (response.statusCode == 200) {
-      var jsonResponse = jsonDecode(response.body);
+      // var jsonResponse = jsonDecode(response.body);
 
       setState(() {
         status = 'success';

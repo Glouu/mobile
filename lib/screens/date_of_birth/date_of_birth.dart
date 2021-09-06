@@ -171,7 +171,7 @@ class _DateOfBirthState extends State<DateOfBirth> {
     );
 
     if (response.statusCode == 200) {
-      var jsonResponse = jsonDecode(response.body);
+      // var jsonResponse = jsonDecode(response.body);
       setState(() {
         Navigator.pushReplacement(
             context,
@@ -181,7 +181,6 @@ class _DateOfBirthState extends State<DateOfBirth> {
       });
     } else {
       var jsonError = jsonDecode(response.body);
-      print(jsonError);
       setState(() {
         isSubmit = false;
         status = 'error';

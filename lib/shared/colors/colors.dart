@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 final transparentBg = Colors.transparent;
 final mainColor = Color(0xFF464BC8);
+final textFeedColor = Color(0xFFF2F7FF);
 final MaterialColor themeMainColor = MaterialColor(
   0xFF464BC8,
   const <int, Color>{
@@ -17,3 +18,7 @@ final MaterialColor themeMainColor = MaterialColor(
     900: Color(0xFF464BC8),
   },
 );
+final storyColors = [
+  Color(0xFF464BC8),
+  Color(0xFF464BC8),
+];

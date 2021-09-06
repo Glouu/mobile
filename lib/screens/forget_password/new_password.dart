@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:gloou/screens/log_in/log_in.dart';
 import 'package:gloou/shared/api_environment/api_utils.dart';
@@ -164,7 +163,7 @@ class _NewPasswordState extends State<NewPassword> {
     );
 
     if (response.statusCode == 200) {
-      var jsonResponse = jsonDecode(response.body);
+      // var jsonResponse = jsonDecode(response.body);
 
       setState(() {
         status = 'success';
