@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:gloou/screens/camera/camera_setup.dart';
 import 'package:gloou/screens/drawer/navigation_drawer.dart';
 import 'package:gloou/screens/feeds/feeds.dart';
 import 'package:gloou/shared/colors/colors.dart';
@@ -22,12 +23,7 @@ class _GeneralHomeState extends State<GeneralHome> {
         style: TextStyle(fontSize: 30),
       ),
     ),
-    Container(
-      child: Text(
-        'Camera page',
-        style: TextStyle(fontSize: 30),
-      ),
-    ),
+    CameraSetUp(),
     Container(
       child: Text(
         'Profile page',
@@ -40,8 +36,53 @@ class _GeneralHomeState extends State<GeneralHome> {
   Widget build(BuildContext context) {
     return Scaffold(
       extendBodyBehindAppBar: true,
-      drawer: NavigationDrawer(),
-      appBar: AppBar(
+      drawer: _selectedIndex == 0 ? NavigationDrawer() : null,
+      appBar: getAppBar(),
+      body: SafeArea(
+        child: IndexedStack(
+          index: _selectedIndex,
+          children: pages,
+        ),
+      ),
+      bottomNavigationBar: _selectedIndex == 2
+          ? null
+          : BottomNavigationBar(
+              currentIndex: _selectedIndex,
+              selectedItemColor: Colors.white,
+              unselectedItemColor: Colors.grey[500],
+              backgroundColor: Colors.black,
+              type: BottomNavigationBarType.fixed,
+              showSelectedLabels: false,
+              showUnselectedLabels: false,
+              items: [
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.home),
+                  label: 'Home',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.search),
+                  label: 'Search',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.camera_alt_sharp),
+                  label: 'Camera',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.person),
+                  label: 'Profile',
+                ),
+              ],
+              onTap: (index) {
+                _selectedIndex = index;
+                setState(() {});
+              },
+            ),
+    );
+  }
+
+  getAppBar() {
+    if (_selectedIndex == 0) {
+      return AppBar(
         centerTitle: true,
         backgroundColor: Colors.transparent,
         elevation: 0.0,
@@ -52,7 +93,7 @@ class _GeneralHomeState extends State<GeneralHome> {
             SvgPicture.asset(
               'assets/images/logo.svg',
               color: mainColor,
-              height: 50,
+              height: 30,
               alignment: Alignment.center,
             ),
           ],
@@ -61,37 +102,35 @@ class _GeneralHomeState extends State<GeneralHome> {
           IconButton(
               onPressed: () {}, icon: Icon(Icons.messenger_outline_rounded))
         ],
-      ),
-      body: SafeArea(child: pages[_selectedIndex]),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _selectedIndex,
-        selectedItemColor: Colors.white,
-        unselectedItemColor: Colors.grey[500],
+      );
+    }
+    if (_selectedIndex == 2) {
+      return AppBar(
+        centerTitle: true,
         backgroundColor: Colors.black,
-        type: BottomNavigationBarType.fixed,
-        items: [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
+        elevation: 0.0,
+        iconTheme: IconThemeData(color: Colors.white),
+        title: Text(
+          'Camera',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.search),
-            label: 'Search',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.camera_alt_sharp),
-            label: 'Camera',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profile',
-          ),
+        ),
+        leading: IconButton(
+            onPressed: () {
+              setState(() {
+                _selectedIndex = 0;
+              });
+            },
+            icon: Icon(Icons.close)),
+        actions: [
+          IconButton(
+            onPressed: () {},
+            icon: Icon(Icons.flash_auto),
+          )
         ],
-        onTap: (index) {
-          _selectedIndex = index;
-          setState(() {});
-        },
-      ),
-    );
+      );
+    }
   }
 }

@@ -6,6 +6,7 @@ import 'package:gloou/widgets/feed_pdf_widget.dart';
 import 'package:gloou/widgets/feed_text_widget.dart';
 import 'package:gloou/widgets/feed_video_widget.dart';
 import 'package:gloou/widgets/story_widget.dart';
+import 'package:sliding_sheet/sliding_sheet.dart';
 
 class Feeds extends StatefulWidget {
   // const Feeds({Key? key}) : super(key: key);
@@ -152,16 +153,6 @@ class _FeedsState extends State<Feeds> {
     super.initState();
   }
 
-  // formatImage(String data) {
-  //   var getBase64 = convertImage.base64ToImage(data);
-  //
-  //   if (getBase64 != null) {
-  //     return getBase64;
-  //   } else {
-  //     return null;
-  //   }
-  // }
-
   @override
   Widget build(BuildContext context) {
     return ListView(
@@ -287,4 +278,16 @@ class _FeedsState extends State<Feeds> {
       ],
     );
   }
+
+  Future showSheet() => showSlidingBottomSheet(
+        context,
+        builder: (context) => SlidingSheetDialog(
+            snapSpec: SnapSpec(snappings: [0.4, 0.7, 1]), builder: buildSheet),
+      );
+
+  Widget buildSheet(context, state) => Material(
+        child: ListView(
+          children: [],
+        ),
+      );
 }

@@ -209,8 +209,8 @@ class _LogInState extends State<LogIn> {
     }
     if (isValid) {
       loginModel = LoginModel(
-        emailOrPhone: emailOrPhoneController.text,
-        password: passwordController.text,
+        emailOrPhone: emailOrPhoneController.text.trim(),
+        password: passwordController.text.trim(),
       );
       var url = Uri.parse(ApiUtils.API_URL + '/auth');
       var httpClient = http.Client();
