@@ -170,6 +170,7 @@ class _LogInState extends State<LogIn> {
                     title: 'Login',
                     onClick: onSubmit,
                     isButtonActive: isSubmit,
+                    buttonColor: Theme.of(context).primaryColor,
                   ),
                   TextButtonWidget(
                     title: 'I don’t have an account',

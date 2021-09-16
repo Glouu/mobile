@@ -2,21 +2,23 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:gloou/screens/edit_profile/edit_profile.dart';
 import 'package:gloou/screens/log_in/log_in.dart';
 import 'package:gloou/shared/api_environment/api_utils.dart';
 import 'package:gloou/shared/token/token.dart';
 import 'package:gloou/shared/utilities/convert_image.dart';
+import 'package:gloou/widgets/button_widget.dart';
 import 'package:http/http.dart' as http;
 
-class Profile extends StatefulWidget {
-  const Profile({Key? key}) : super(key: key);
+class FollowProfile extends StatefulWidget {
+  final String userId;
+  const FollowProfile({Key? key, required this.userId}) : super(key: key);
 
   @override
-  _ProfileState createState() => _ProfileState();
+  _FollowProfileState createState() => _FollowProfileState();
 }
 
-class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
+class _FollowProfileState extends State<FollowProfile>
+    with SingleTickerProviderStateMixin {
   final FocusNode toggleNode = FocusNode();
   late TabController _tabController;
 
@@ -200,40 +202,25 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
+                  ButtonWidget(
+                    title: 'Follow',
+                    onClick: () {},
+                    isButtonActive: false,
+                    buttonColor: Theme.of(context).primaryColor,
+                  ),
+                  SizedBox(
+                    width: 10,
+                  ),
                   OutlinedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => EditProfile(
-                            name: userInfo['firstName'] +
-                                ' ' +
-                                userInfo['lastName'],
-                            image: userInfo['image'],
-                            bio: userInfo['bio'],
-                            username: userInfo['userName'],
-                            emailOrPhone: userInfo['phoneNumber'] != ''
-                                ? userInfo['phoneNumber']
-                                : userInfo['email'],
-                          ),
-                        ),
-                      );
-                    },
-                    child: Text(
-                      'Edit profile',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontFamily: 'Fellix-Bold',
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
+                    onPressed: () {},
+                    child: Icon(Icons.mail_outline_rounded),
                     style: OutlinedButton.styleFrom(
                       side: BorderSide(
                         width: 2,
                         color: Theme.of(context).primaryColor,
                       ),
                       padding: EdgeInsets.all(16),
-                      shape: StadiumBorder(),
+                      shape: CircleBorder(),
                     ),
                   )
                 ],

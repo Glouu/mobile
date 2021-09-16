@@ -4,13 +4,15 @@ class ButtonWidget extends StatelessWidget {
   final String title;
   final VoidCallback onClick;
   final bool isButtonActive;
+  final Color buttonColor;
 
-  const ButtonWidget(
-      {Key? key,
-      required this.title,
-      required this.onClick,
-      required this.isButtonActive})
-      : super(key: key);
+  const ButtonWidget({
+    Key? key,
+    required this.title,
+    required this.onClick,
+    required this.isButtonActive,
+    required this.buttonColor,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) => RaisedButton(
@@ -24,7 +26,7 @@ class ButtonWidget extends StatelessWidget {
           ),
         ),
         shape: StadiumBorder(),
-        color: Theme.of(context).primaryColor,
+        color: buttonColor,
         padding: EdgeInsets.symmetric(
           vertical: 18,
         ),
@@ -32,6 +34,4 @@ class ButtonWidget extends StatelessWidget {
         disabledColor: Theme.of(context).primaryColor.withOpacity(0.5),
         disabledTextColor: Colors.white.withOpacity(0.5),
       );
-
-  // Widget buildButton() =>
 }

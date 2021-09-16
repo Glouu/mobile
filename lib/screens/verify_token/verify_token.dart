@@ -158,6 +158,7 @@ class _VerifyTokenState extends State<VerifyToken> {
                         onSubmitOtp();
                       }
                     },
+                    buttonColor: Theme.of(context).primaryColor,
                   ),
                 ],
               ),

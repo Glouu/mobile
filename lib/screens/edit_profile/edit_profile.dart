@@ -143,17 +143,20 @@ class _EditProfileState extends State<EditProfile> {
                     child: Stack(
                       alignment: Alignment.center,
                       children: [
-                        Container(
-                          width: 96,
-                          height: 96,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            image: DecorationImage(
-                              image: MemoryImage(
-                                convertImage.formatBase64(userModel.image),
+                        InkWell(
+                          child: Container(
+                            width: 96,
+                            height: 96,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              image: DecorationImage(
+                                image: MemoryImage(
+                                  convertImage.formatBase64(userModel.image),
+                                ),
                               ),
                             ),
                           ),
+                          onTap: () {},
                         ),
                         Positioned(
                           child: Container(
@@ -226,7 +229,7 @@ class _EditProfileState extends State<EditProfile> {
                   ButtonWidget(
                     title: 'Sign Up',
                     isButtonActive: isSubmit,
-                    onClick: onSubmit,
+                    onClick: onSubmit, buttonColor: Theme.of(context).primaryColor,
                   ),
                 ],
               ),

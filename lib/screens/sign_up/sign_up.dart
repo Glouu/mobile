@@ -172,6 +172,7 @@ class _SignUpState extends State<SignUp> {
                     title: 'Sign Up',
                     isButtonActive: isSubmit,
                     onClick: onSubmit,
+                    buttonColor: Theme.of(context).primaryColor,
                   ),
                   TextButtonWidget(
                     title: 'I have an account',

@@ -115,6 +115,7 @@ class _DateOfBirthState extends State<DateOfBirth> {
                     }
                   },
                   isButtonActive: isSubmit,
+                  buttonColor: Theme.of(context).primaryColor,
                 )
               ],
             ),

@@ -131,6 +131,7 @@ class _NewPasswordState extends State<NewPassword> {
                       onSubmit();
                     }
                   },
+                  buttonColor: Theme.of(context).primaryColor,
                 )
               ],
             ),

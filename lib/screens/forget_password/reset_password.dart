@@ -132,6 +132,7 @@ class _ResetPasswordState extends State<ResetPassword> {
                       onSubmit();
                     }
                   },
+                  buttonColor: Theme.of(context).primaryColor,
                 ),
               ],
             ),

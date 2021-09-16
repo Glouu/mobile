@@ -3,11 +3,13 @@ import 'package:flutter_svg/svg.dart';
 import 'package:gloou/screens/camera/camera_setup.dart';
 import 'package:gloou/screens/drawer/navigation_drawer.dart';
 import 'package:gloou/screens/feeds/feeds.dart';
+import 'package:gloou/screens/profile/profile.dart';
 import 'package:gloou/shared/colors/colors.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class GeneralHome extends StatefulWidget {
-  const GeneralHome({Key? key}) : super(key: key);
+  final int selectPage;
+  const GeneralHome({Key? key, this.selectPage = 0}) : super(key: key);
 
   @override
   _GeneralHomeState createState() => _GeneralHomeState();
@@ -25,13 +27,15 @@ class _GeneralHomeState extends State<GeneralHome> {
       ),
     ),
     CameraSetUp(),
-    Container(
-      child: Text(
-        'Profile page',
-        style: TextStyle(fontSize: 30),
-      ),
-    ),
+    Profile(),
   ];
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    _selectedIndex = widget.selectPage;
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +48,9 @@ class _GeneralHomeState extends State<GeneralHome> {
       footerTriggerDistance: 30,
       child: Scaffold(
         extendBodyBehindAppBar: true,
-        drawer: _selectedIndex == 0 ? NavigationDrawer() : null,
+        drawer: _selectedIndex == 0 || _selectedIndex == 3
+            ? NavigationDrawer()
+            : null,
         appBar: getAppBar(),
         body: SafeArea(
           child: IndexedStack(
@@ -141,5 +147,35 @@ class _GeneralHomeState extends State<GeneralHome> {
         ],
       );
     }
+    if (_selectedIndex == 3) {
+      return AppBar(
+        centerTitle: true,
+        backgroundColor: Colors.transparent,
+        elevation: 0.0,
+        iconTheme: IconThemeData(color: Colors.black),
+      );
+    }
+  }
+
+  Widget getBody(int index) {
+    switch (index) {
+      case 0:
+        return Feeds();
+      case 1:
+        return Container(
+          child: Text(
+            'Search page',
+            style: TextStyle(fontSize: 30),
+          ),
+        );
+      case 2:
+        return CameraSetUp();
+      case 3:
+        return Profile();
+    }
+
+    return Center(
+      child: Text('Page not found'),
+    );
   }
 }

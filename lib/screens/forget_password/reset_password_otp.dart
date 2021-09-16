@@ -150,6 +150,7 @@ class _ResetPasswordOtpState extends State<ResetPasswordOtp> {
                         onSubmitOtp();
                       }
                     },
+                    buttonColor: Theme.of(context).primaryColor,
                   ),
                 ],
               ),
