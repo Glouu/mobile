@@ -98,6 +98,18 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
   }
 
   @override
+  void didChangeDependencies() {
+    // TODO: implement didChangeDependencies
+    super.didChangeDependencies();
+    init().then((data) {
+      setState(() {
+        userInfo = data['data'];
+        isCircular = false;
+      });
+    });
+  }
+
+  @override
   void dispose() {
     _tabController.dispose();
     // TODO: implement dispose
@@ -127,6 +139,7 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
                       image: MemoryImage(
                         convertImage.formatBase64(userInfo['image']),
                       ),
+                      fit: BoxFit.fill,
                     ),
                   ),
                 ),
@@ -186,8 +199,7 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
                 children: [
                   // Text(userInfo['bio']),
                   Text(
-                    'Visionary | Creator | Candle Maker | Aspiring nude photographer & Whatever else I feel like being ',
-                    // userInfo['bio'],
+                    userInfo['bio'],
                     style: TextStyle(
                       fontSize: 16,
                     ),

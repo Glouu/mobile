@@ -5,12 +5,13 @@ class ConvertImage {
   base64ToImage(String image) {
     var splitData = image.split(",")[1];
     Uint8List decodeBase64 = base64Decode(splitData);
+    // print(decodeBase64);
     return decodeBase64;
   }
 
   imageToBase64(Uint8List data) {
     var dataToBase64 = base64Encode(data);
-    var saveData = 'data:image/jpeg;base64,$dataToBase64';
+    var saveData = 'data:image/jpg;base64,$dataToBase64';
     return saveData;
   }
 

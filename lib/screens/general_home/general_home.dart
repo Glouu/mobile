@@ -119,34 +119,37 @@ class _GeneralHomeState extends State<GeneralHome> {
         ],
       );
     }
-    if (_selectedIndex == 2) {
+    if (_selectedIndex == 1) {
       return AppBar(
         centerTitle: true,
-        backgroundColor: Colors.black,
+        backgroundColor: Colors.transparent,
         elevation: 0.0,
-        iconTheme: IconThemeData(color: Colors.white),
-        title: Text(
-          'Camera',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
+        iconTheme: IconThemeData(color: Colors.black),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SvgPicture.asset(
+              'assets/images/logo.svg',
+              color: mainColor,
+              height: 30,
+              alignment: Alignment.center,
+            ),
+          ],
         ),
-        leading: IconButton(
-            onPressed: () {
-              setState(() {
-                _selectedIndex = 0;
-              });
-            },
-            icon: Icon(Icons.close)),
         actions: [
           IconButton(
-            onPressed: () {},
-            icon: Icon(Icons.flash_auto),
-          )
+              onPressed: () {}, icon: Icon(Icons.messenger_outline_rounded))
         ],
       );
     }
+    // if (_selectedIndex == 2) {
+    //   return AppBar(
+    //     toolbarHeight: 20,
+    //     backgroundColor: Colors.transparent,
+    //     elevation: 0.0,
+    //     automaticallyImplyLeading: false,
+    //   );
+    // }
     if (_selectedIndex == 3) {
       return AppBar(
         centerTitle: true,
@@ -155,27 +158,5 @@ class _GeneralHomeState extends State<GeneralHome> {
         iconTheme: IconThemeData(color: Colors.black),
       );
     }
-  }
-
-  Widget getBody(int index) {
-    switch (index) {
-      case 0:
-        return Feeds();
-      case 1:
-        return Container(
-          child: Text(
-            'Search page',
-            style: TextStyle(fontSize: 30),
-          ),
-        );
-      case 2:
-        return CameraSetUp();
-      case 3:
-        return Profile();
-    }
-
-    return Center(
-      child: Text('Page not found'),
-    );
   }
 }

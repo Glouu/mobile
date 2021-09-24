@@ -1,12 +1,19 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:gloou/shared/api_environment/api_utils.dart';
 import 'package:gloou/shared/models/userinfoModel/userModel.dart';
+import 'package:gloou/shared/secure_storage/secure_storage.dart';
 import 'package:gloou/shared/utilities/convert_image.dart';
-import 'package:gloou/shared/utilities/sample_data.dart';
 import 'package:gloou/widgets/button_widget.dart';
 import 'package:gloou/widgets/text_widget.dart';
 import 'package:gloou/widgets/toast_widget.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:keyboard_dismisser/keyboard_dismisser.dart';
+import 'package:http/http.dart' as http;
 
 class EditProfile extends StatefulWidget {
   final String image, name, username, bio, emailOrPhone;
@@ -24,6 +31,7 @@ class EditProfile extends StatefulWidget {
 }
 
 class _EditProfileState extends State<EditProfile> {
+  String image = '';
   final editProfileFormKey = GlobalKey<FormState>();
 
   TextEditingController emailOrPhoneController = TextEditingController();
@@ -38,13 +46,33 @@ class _EditProfileState extends State<EditProfile> {
 
   bool isSubmit = false;
 
-  late String status;
-  late String message;
+  late String status, message, token;
 
   final toast = FToast();
 
-  UserModel userModel = UserData.myData;
+  final SecureStorage secureStorage = SecureStorage();
+
+  late UserModel userModel;
   final ConvertImage convertImage = ConvertImage();
+
+  Future pickImage(ImageSource source) async {
+    try {
+      final image = await ImagePicker().pickImage(source: source);
+      if (image == null) return;
+      // var convertToBase64 = convertImage.imageToBase64(File(image.path).readAsBytesSync());
+      final imageTemp = convertImage.imageToBase64(
+        File(image.path).readAsBytesSync(),
+      );
+
+      setState(() {
+        this.image = imageTemp;
+        imageController.text = imageTemp;
+        Navigator.of(context).pop(context);
+      });
+    } on PlatformException catch (e) {
+      print('Failed to pick image $e');
+    }
+  }
 
   Future<bool?> showWarning(BuildContext context) => showDialog<bool>(
         context: context,
@@ -88,10 +116,24 @@ class _EditProfileState extends State<EditProfile> {
     init();
   }
 
-  void init() {
+  void init() async {
     emailOrPhoneController.text = widget.emailOrPhone;
     nameController.text = widget.name;
+    usernameController.text = widget.username;
+    imageController.text = widget.image;
+    token = await secureStorage.readSecureData('token');
   }
+
+  @override
+  void dispose() {
+    emailOrPhoneController.dispose();
+    nameController.dispose();
+    usernameController.dispose();
+    imageController.dispose();
+    // TODO: implement dispose
+    super.dispose();
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -150,23 +192,31 @@ class _EditProfileState extends State<EditProfile> {
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
                               image: DecorationImage(
-                                image: MemoryImage(
-                                  convertImage.formatBase64(userModel.image),
-                                ),
+                                image: image != ''
+                                    ? MemoryImage(
+                                        convertImage.formatBase64(image),
+                                      )
+                                    : MemoryImage(
+                                        convertImage.formatBase64(widget.image),
+                                      ),
+                                fit: BoxFit.fill,
                               ),
                             ),
                           ),
-                          onTap: () {},
+                          onTap: showBottomSheet,
                         ),
                         Positioned(
-                          child: Container(
-                            width: 30,
-                            height: 30,
-                            child: Icon(
-                              Icons.camera_alt_sharp,
-                              color: Colors.white,
-                              size: 30,
+                          child: InkWell(
+                            child: Container(
+                              width: 30,
+                              height: 30,
+                              child: Icon(
+                                Icons.camera_alt_sharp,
+                                color: Colors.white,
+                                size: 30,
+                              ),
                             ),
+                            onTap: showBottomSheet,
                           ),
                         )
                       ],
@@ -227,9 +277,10 @@ class _EditProfileState extends State<EditProfile> {
                           height: MediaQuery.of(context).size.height / 4,
                         ),
                   ButtonWidget(
-                    title: 'Sign Up',
+                    title: 'Save Changes',
                     isButtonActive: isSubmit,
-                    onClick: onSubmit, buttonColor: Theme.of(context).primaryColor,
+                    onClick: onSubmit,
+                    buttonColor: Theme.of(context).primaryColor,
                   ),
                 ],
               ),
@@ -239,6 +290,31 @@ class _EditProfileState extends State<EditProfile> {
       ),
     );
   }
+
+  void showBottomSheet() => showModalBottomSheet(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.only(
+            topRight: Radius.circular(24),
+            topLeft: Radius.circular(24),
+          ),
+        ),
+        context: context,
+        builder: (context) => Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: Icon(Icons.image_outlined),
+              title: Text('Gallery'),
+              onTap: () => pickImage(ImageSource.gallery),
+            ),
+            ListTile(
+              leading: Icon(Icons.camera_alt_outlined),
+              title: Text('Camera'),
+              onTap: () => pickImage(ImageSource.camera),
+            ),
+          ],
+        ),
+      );
 
   void displayToast() => toast.showToast(
         child: ToastMessage(status: status, message: message),
@@ -262,5 +338,25 @@ class _EditProfileState extends State<EditProfile> {
       userName: usernameController.text,
       image: imageController.text,
     );
+
+    var url = Uri.parse(ApiUtils.API_URL + '/User/UpdateProfile');
+    var httpClient = http.Client();
+
+    var response = await httpClient.put(
+      url,
+      body: jsonEncode(userModel.toJson()),
+      headers: {
+        HttpHeaders.contentTypeHeader: 'application/json',
+        HttpHeaders.authorizationHeader: 'Bearer $token'
+      },
+    );
+
+    if (response.statusCode == 200) {
+      var jsonResponse = jsonDecode(response.body);
+
+      setState(() {
+        Navigator.pop(context);
+      });
+    } else {}
   }
 }

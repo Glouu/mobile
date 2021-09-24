@@ -1,17 +1,14 @@
-import 'package:camera/came'
-    'ra.dart';
+import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
-import 'package:gloou/screens/camera/display_picture/display_picture.dart';
 
-class PictureCamera extends StatefulWidget {
-  const PictureCamera({Key? key}) : super(key: key);
+class Challenge extends StatefulWidget {
+  const Challenge({Key? key}) : super(key: key);
 
   @override
-  _PictureCameraState createState() => _PictureCameraState();
+  _ChallengeState createState() => _ChallengeState();
 }
 
-class _PictureCameraState extends State<PictureCamera> {
+class _ChallengeState extends State<Challenge> {
   late CameraController _cameraController;
   late Future<void> _initializeControllerFuture;
   double cameraHorizontalPosition = 0;
@@ -131,13 +128,13 @@ class _PictureCameraState extends State<PictureCamera> {
                                         final image = await _cameraController
                                             .takePicture();
 
-                                        await Navigator.of(context).push(
-                                          MaterialPageRoute(
-                                            builder: (context) =>
-                                                DisplayPicture(
-                                                    imagePath: image.path),
-                                          ),
-                                        );
+                                        // await Navigator.of(context).push(
+                                        //   MaterialPageRoute(
+                                        //     builder: (context) =>
+                                        //         DisplayPicture(
+                                        //             imagePath: image.path),
+                                        //   ),
+                                        // );
                                       } catch (e) {
                                         print(e);
                                       }
@@ -153,8 +150,12 @@ class _PictureCameraState extends State<PictureCamera> {
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(5),
                                   ),
-                                  child: SvgPicture.asset(
-                                    'assets/images/upload_pdf.svg',
+                                  child: IconButton(
+                                    onPressed: () {},
+                                    icon: Icon(
+                                      Icons.upload,
+                                      color: Colors.white,
+                                    ),
                                   ),
                                 ),
                               ],

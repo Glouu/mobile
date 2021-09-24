@@ -129,6 +129,7 @@ class _FollowProfileState extends State<FollowProfile>
                       image: MemoryImage(
                         convertImage.formatBase64(userInfo['image']),
                       ),
+                      fit: BoxFit.fill,
                     ),
                   ),
                 ),
@@ -188,8 +189,7 @@ class _FollowProfileState extends State<FollowProfile>
                 children: [
                   // Text(userInfo['bio']),
                   Text(
-                    'Visionary | Creator | Candle Maker | Aspiring nude photographer & Whatever else I feel like being ',
-                    // userInfo['bio'],
+                    userInfo['bio'],
                     style: TextStyle(
                       fontSize: 16,
                     ),
