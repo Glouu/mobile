@@ -17,13 +17,26 @@ class ButtonWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) => RaisedButton(
         onPressed: isButtonActive ? null : onClick,
-        child: Text(
-          title,
-          style: TextStyle(
-            fontSize: 16,
-            fontFamily: 'Fellix-Bold',
-            fontWeight: FontWeight.bold,
-          ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            isButtonActive
+                ? CircularProgressIndicator(
+                    color: Colors.white,
+                  )
+                : Container(),
+            SizedBox(
+              width: 10,
+            ),
+            Text(
+              title,
+              style: TextStyle(
+                fontSize: 16,
+                fontFamily: 'Fellix-Bold',
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
         ),
         shape: StadiumBorder(),
         color: buttonColor,

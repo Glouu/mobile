@@ -19,22 +19,45 @@ class SecureInputWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TextFormField(
-      controller: textInput,
-      focusNode: textNode,
-      validator: validationMsg,
-      autovalidateMode: AutovalidateMode.onUserInteraction,
-      obscureText: isPasswordVisible,
-      decoration: InputDecoration(
-        labelText: labelTitle,
-        suffixIcon: IconButton(
-          onPressed: onClick,
-          icon: isPasswordVisible
-              ? Icon(Icons.visibility_off_outlined)
-              : Icon(Icons.visibility_outlined),
+    return Stack(
+      children: [
+        textNode.hasFocus
+            ? Positioned(
+                child: Text(
+                  labelTitle,
+                  style: TextStyle(color: Colors.grey[500]),
+                ),
+                left: 10,
+                top: 5,
+              )
+            : textInput.text.isNotEmpty
+                ? Positioned(
+                    child: Text(
+                      labelTitle,
+                      style: TextStyle(color: Colors.grey[500]),
+                    ),
+                    left: 10,
+                    top: 5,
+                  )
+                : Text(''),
+        TextFormField(
+          controller: textInput,
+          focusNode: textNode,
+          validator: validationMsg,
+          autovalidateMode: AutovalidateMode.onUserInteraction,
+          obscureText: isPasswordVisible,
+          decoration: InputDecoration(
+            hintText: textNode.hasFocus ? null : labelTitle,
+            suffixIcon: IconButton(
+              onPressed: onClick,
+              icon: isPasswordVisible
+                  ? Icon(Icons.visibility_off_outlined)
+                  : Icon(Icons.visibility_outlined),
+            ),
+            border: OutlineInputBorder(),
+          ),
         ),
-        border: OutlineInputBorder(),
-      ),
+      ],
     );
   }
 }

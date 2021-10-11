@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:gloou/screens/camera/camera_setup.dart';
 import 'package:gloou/screens/drawer/navigation_drawer.dart';
+import 'package:gloou/screens/explore/explore.dart';
 import 'package:gloou/screens/feeds/feeds.dart';
 import 'package:gloou/screens/profile/profile.dart';
 import 'package:gloou/shared/colors/colors.dart';
@@ -17,18 +18,6 @@ class GeneralHome extends StatefulWidget {
 
 class _GeneralHomeState extends State<GeneralHome> {
   int _selectedIndex = 0;
-
-  List<Widget> pages = [
-    Feeds(),
-    Container(
-      child: Text(
-        'Search page',
-        style: TextStyle(fontSize: 30),
-      ),
-    ),
-    CameraSetUp(),
-    Profile(),
-  ];
 
   @override
   void initState() {
@@ -53,10 +42,11 @@ class _GeneralHomeState extends State<GeneralHome> {
             : null,
         appBar: getAppBar(),
         body: SafeArea(
-          child: IndexedStack(
-            index: _selectedIndex,
-            children: pages,
-          ),
+          child: getBody(_selectedIndex),
+          // child: IndexedStack(
+          //   index: _selectedIndex,
+          //   children: pages,
+          // ),
         ),
         bottomNavigationBar: _selectedIndex == 2
             ? null
@@ -87,8 +77,9 @@ class _GeneralHomeState extends State<GeneralHome> {
                   ),
                 ],
                 onTap: (index) {
-                  _selectedIndex = index;
-                  setState(() {});
+                  setState(() {
+                    _selectedIndex = index;
+                  });
                 },
               ),
       ),
@@ -119,37 +110,6 @@ class _GeneralHomeState extends State<GeneralHome> {
         ],
       );
     }
-    if (_selectedIndex == 1) {
-      return AppBar(
-        centerTitle: true,
-        backgroundColor: Colors.transparent,
-        elevation: 0.0,
-        iconTheme: IconThemeData(color: Colors.black),
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            SvgPicture.asset(
-              'assets/images/logo.svg',
-              color: mainColor,
-              height: 30,
-              alignment: Alignment.center,
-            ),
-          ],
-        ),
-        actions: [
-          IconButton(
-              onPressed: () {}, icon: Icon(Icons.messenger_outline_rounded))
-        ],
-      );
-    }
-    // if (_selectedIndex == 2) {
-    //   return AppBar(
-    //     toolbarHeight: 20,
-    //     backgroundColor: Colors.transparent,
-    //     elevation: 0.0,
-    //     automaticallyImplyLeading: false,
-    //   );
-    // }
     if (_selectedIndex == 3) {
       return AppBar(
         centerTitle: true,
@@ -158,5 +118,29 @@ class _GeneralHomeState extends State<GeneralHome> {
         iconTheme: IconThemeData(color: Colors.black),
       );
     }
+  }
+
+  // List<Widget> pages = [
+  //   Feeds(),
+  //   Explore(),
+  //   CameraSetUp(),
+  //   Profile(),
+  // ];
+
+  Widget getBody(int i) {
+    switch (i) {
+      case 0:
+        return Feeds();
+      case 1:
+        return Explore();
+      case 2:
+        return CameraSetUp();
+      case 3:
+        return Profile();
+    }
+
+    return Center(
+      child: CircularProgressIndicator(),
+    );
   }
 }

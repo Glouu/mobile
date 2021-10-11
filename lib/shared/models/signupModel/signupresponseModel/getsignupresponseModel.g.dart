@@ -7,14 +7,13 @@ part of 'getsignupresponseModel.dart';
 // **************************************************************************
 
 GetsignupresponseModel _$GetsignupresponseModelFromJson(
-    Map<String, dynamic> json) {
-  return GetsignupresponseModel(
-    email: json['email'] as String,
-    id: json['id'] as String,
-    isEmail: json['isEmail'] as bool,
-    phoneNumber: json['phoneNumber'] as String,
-  );
-}
+        Map<String, dynamic> json) =>
+    GetsignupresponseModel(
+      email: json['email'] as String,
+      id: json['id'] as String,
+      isEmail: json['isEmail'] as bool,
+      phoneNumber: json['phoneNumber'] as String,
+    );
 
 Map<String, dynamic> _$GetsignupresponseModelToJson(
         GetsignupresponseModel instance) =>

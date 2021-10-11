@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:gloou/screens/edit_profile/edit_profile.dart';
 import 'package:gloou/screens/log_in/log_in.dart';
+import 'package:gloou/screens/profile/listOfUserPost/listOfUserPost.dart';
 import 'package:gloou/shared/api_environment/api_utils.dart';
 import 'package:gloou/shared/token/token.dart';
 import 'package:gloou/shared/utilities/convert_image.dart';
@@ -26,32 +27,17 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
   late Map<String, dynamic> userInfo;
   bool isCircular = true;
 
-  List<Widget> children = [
-    Container(
-      child: Text(
-        'Pictures Here',
-        style: TextStyle(fontSize: 30),
-      ),
-    ),
-    Container(
-      child: Text(
-        'Videos Here',
-        style: TextStyle(fontSize: 30),
-      ),
-    ),
-    Container(
-      child: Text(
-        'Time pod here',
-        style: TextStyle(fontSize: 30),
-      ),
-    ),
-    Container(
-      child: Text(
-        'Pdf Here',
-        style: TextStyle(fontSize: 30),
-      ),
-    ),
-  ];
+  bool isPostCircular = true;
+  bool isChallengeCircular = true;
+  bool isBMessageCircular = true;
+  bool isTimeCircular = true;
+
+  late bool isPostEmpty;
+  late bool isChallengeEmpty;
+  late bool isBMessageEmpty;
+  late bool isTimePodEmpty;
+
+  late List postData;
 
   init() async {
     var token = await tokenLogic.getToken();
@@ -81,6 +67,39 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
     }
   }
 
+  fetchPost({int page = 1, int limit = 10}) async {
+    var token = await tokenLogic.getToken();
+    if (token != null) {
+      var url = Uri.parse(ApiUtils.API_URL + '/Post/GetUserPosts');
+      var httpClient = http.Client();
+      var response = await httpClient.get(
+        url,
+        headers: {
+          HttpHeaders.contentTypeHeader: 'application/json',
+          HttpHeaders.authorizationHeader: 'Bearer $token'
+        },
+      );
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      } else {}
+    } else {
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(
+          builder: (context) => LogIn(),
+        ),
+        (route) => false,
+      );
+    }
+  }
+
+  _onRefresh() async {
+    var list = await fetchPost(page: 1);
+    var listData = list['data'];
+  }
+
+  _onLoading() async {}
+
   @override
   void initState() {
     _tabController = TabController(length: 4, vsync: this);
@@ -91,6 +110,24 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
       setState(() {
         userInfo = data['data'];
         isCircular = false;
+      });
+    });
+    fetchPost().then((data) {
+      setState(() {
+        var initialData = data['data'];
+        if (data != null) {
+          if (initialData.length > 0) {
+            postData = initialData;
+            isPostEmpty = false;
+            isPostCircular = false;
+          } else {
+            isPostEmpty = true;
+            isPostCircular = false;
+          }
+        } else {
+          isPostEmpty = true;
+          isPostCircular = false;
+        }
       });
     });
     // TODO: implement initState
@@ -260,6 +297,7 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
                     centerTitle: true,
                     backgroundColor: Colors.transparent,
                     elevation: 0.0,
+                    leading: null,
                     iconTheme: IconThemeData(color: Colors.black),
                     bottom: TabBar(
                       indicatorColor: Colors.transparent,
@@ -284,7 +322,35 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
                   ),
                   body: TabBarView(
                     controller: _tabController,
-                    children: children,
+                    children: [
+                      isPostCircular
+                          ? Center(
+                              child: CircularProgressIndicator(),
+                            )
+                          : isPostEmpty
+                              ? Center(
+                                  child: Text('You don\'t have any post'),
+                                )
+                              : ListOfUserPost(postData: postData),
+                      Container(
+                        child: Text(
+                          'Videos Here',
+                          style: TextStyle(fontSize: 30),
+                        ),
+                      ),
+                      Container(
+                        child: Text(
+                          'Time pod here',
+                          style: TextStyle(fontSize: 30),
+                        ),
+                      ),
+                      Container(
+                        child: Text(
+                          'Pdf Here',
+                          style: TextStyle(fontSize: 30),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),

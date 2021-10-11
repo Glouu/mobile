@@ -6,11 +6,10 @@ part of 'dateofbirthModel.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-DateofbirthModel _$DateofbirthModelFromJson(Map<String, dynamic> json) {
-  return DateofbirthModel(
-    dateOfBirth: json['dateOfBirth'] as String,
-  );
-}
+DateofbirthModel _$DateofbirthModelFromJson(Map<String, dynamic> json) =>
+    DateofbirthModel(
+      dateOfBirth: json['dateOfBirth'] as String,
+    );
 
 Map<String, dynamic> _$DateofbirthModelToJson(DateofbirthModel instance) =>
     <String, dynamic>{

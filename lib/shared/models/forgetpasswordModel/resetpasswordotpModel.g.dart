@@ -7,12 +7,11 @@ part of 'resetpasswordotpModel.dart';
 // **************************************************************************
 
 ResetpasswordotpModel _$ResetpasswordotpModelFromJson(
-    Map<String, dynamic> json) {
-  return ResetpasswordotpModel(
-    emailOrPhone: json['emailOrPhone'] as String,
-    otp: json['otp'] as String,
-  );
-}
+        Map<String, dynamic> json) =>
+    ResetpasswordotpModel(
+      emailOrPhone: json['emailOrPhone'] as String,
+      otp: json['otp'] as String,
+    );
 
 Map<String, dynamic> _$ResetpasswordotpModelToJson(
         ResetpasswordotpModel instance) =>

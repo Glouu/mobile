@@ -37,11 +37,13 @@ class _EditProfileState extends State<EditProfile> {
   TextEditingController emailOrPhoneController = TextEditingController();
   TextEditingController nameController = TextEditingController();
   TextEditingController usernameController = TextEditingController();
+  TextEditingController bioController = TextEditingController();
   TextEditingController imageController = TextEditingController();
 
   final FocusNode emailNode = FocusNode();
   final FocusNode nameNode = FocusNode();
   final FocusNode usernameNode = FocusNode();
+  final FocusNode bioNode = FocusNode();
   final FocusNode imagedNode = FocusNode();
 
   bool isSubmit = false;
@@ -109,6 +111,10 @@ class _EditProfileState extends State<EditProfile> {
       setState(() {});
     });
 
+    bioController.addListener(() {
+      setState(() {});
+    });
+
     imageController.addListener(() {
       setState(() {});
     });
@@ -120,6 +126,7 @@ class _EditProfileState extends State<EditProfile> {
     emailOrPhoneController.text = widget.emailOrPhone;
     nameController.text = widget.name;
     usernameController.text = widget.username;
+    bioController.text = widget.bio;
     imageController.text = widget.image;
     token = await secureStorage.readSecureData('token');
   }
@@ -129,11 +136,11 @@ class _EditProfileState extends State<EditProfile> {
     emailOrPhoneController.dispose();
     nameController.dispose();
     usernameController.dispose();
+    bioController.dispose();
     imageController.dispose();
     // TODO: implement dispose
     super.dispose();
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -269,12 +276,22 @@ class _EditProfileState extends State<EditProfile> {
                       }
                     },
                   ),
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height / 50,
+                  ),
+                  TextWidget(
+                    textInput: bioController,
+                    textNode: bioNode,
+                    labelTitle: 'Bio',
+                    maxLines: 4,
+                    validationMsg: (value) {},
+                  ),
                   isKeyboard
                       ? SizedBox(
                           height: MediaQuery.of(context).size.height / 50,
                         )
                       : SizedBox(
-                          height: MediaQuery.of(context).size.height / 4,
+                          height: MediaQuery.of(context).size.height / 6,
                         ),
                   ButtonWidget(
                     title: 'Save Changes',
@@ -332,7 +349,7 @@ class _EditProfileState extends State<EditProfile> {
     }
 
     userModel = UserModel(
-      bio: widget.bio,
+      bio: bioController.text,
       emailOrPhone: emailOrPhoneController.text,
       name: nameController.text,
       userName: usernameController.text,

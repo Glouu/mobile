@@ -16,18 +16,9 @@ class CameraSetUp extends StatefulWidget {
 class _CameraSetUpState extends State<CameraSetUp> {
   int _selectCameraIndex = 0;
 
-  List<Widget> cameraPages = [
-    PictureCamera(),
-    Challenge(),
-    BottledMessage(),
-    TimePod(),
-    TextPost(),
-  ];
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: getAppBar(),
       body: getBody(_selectCameraIndex),
       // IndexedStack(
       //   index: _selectCameraIndex,
@@ -72,51 +63,27 @@ class _CameraSetUpState extends State<CameraSetUp> {
   }
 
   getAppBar() {
-    if (_selectCameraIndex == 0) {
-      return AppBar(
-        centerTitle: true,
-        backgroundColor: Colors.black,
-        elevation: 0.0,
-        iconTheme: IconThemeData(color: Colors.white),
-        title: Text(
-          'Normal',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
-        ),
-        leading: IconButton(
-            onPressed: () {
-              setState(() {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => GeneralHome()));
-              });
-            },
-            icon: Icon(Icons.close)),
-        actions: [
-          IconButton(
-            onPressed: () {},
-            icon: Icon(Icons.flash_auto),
-          )
-        ],
-      );
-    }
-    if (_selectCameraIndex == 1) {}
-    if (_selectCameraIndex == 2) {}
-    if (_selectCameraIndex == 3) {}
     if (_selectCameraIndex == 4) {}
   }
 
   Widget getBody(int index) {
     switch (index) {
       case 0:
-        return PictureCamera();
+        return PictureCamera(
+          pageNumbber: index,
+        );
       case 1:
-        return Challenge();
+        return Challenge(
+          pageNumbber: index,
+        );
       case 2:
-        return BottledMessage();
+        return BottledMessage(
+          pageNumbber: index,
+        );
       case 3:
-        return TimePod();
+        return TimePod(
+          pageNumbber: index,
+        );
       case 4:
         return TextPost();
     }

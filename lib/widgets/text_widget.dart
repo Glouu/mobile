@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gloou/shared/colors/colors.dart';
 
 class TextWidget extends StatelessWidget {
   final TextEditingController textInput;
@@ -17,18 +18,50 @@ class TextWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TextFormField(
-      controller: textInput,
-      focusNode: textNode,
-      validator: validationMsg,
-      autovalidateMode: AutovalidateMode.onUserInteraction,
-      maxLines: maxLines,
-      decoration: InputDecoration(
-        labelText: labelTitle,
-        border: OutlineInputBorder(),
-        labelStyle: TextStyle(),
-        focusedBorder: OutlineInputBorder(),
-      ),
+    return Stack(
+      children: [
+        textNode.hasFocus
+            ? Positioned(
+                child: Text(
+                  labelTitle,
+                  style: TextStyle(color: Colors.grey[500]),
+                ),
+                left: 10,
+                top: 5,
+              )
+            : textInput.text.isNotEmpty
+                ? Positioned(
+                    child: Text(
+                      labelTitle,
+                      style: TextStyle(color: Colors.grey[500]),
+                    ),
+                    left: 10,
+                    top: 5,
+                  )
+                : Text(''),
+        TextFormField(
+          controller: textInput,
+          focusNode: textNode,
+          validator: validationMsg,
+          autovalidateMode: AutovalidateMode.onUserInteraction,
+          maxLines: maxLines,
+          decoration: InputDecoration(
+            hintText: textNode.hasFocus ? null : labelTitle,
+            enabledBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: Colors.grey.shade400),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: mainColor),
+            ),
+            focusedErrorBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: Colors.red),
+            ),
+            errorBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: Colors.red),
+            ),
+          ),
+        )
+      ],
     );
   }
 }

@@ -87,7 +87,7 @@ class _LogInState extends State<LogIn> {
                   TextWidget(
                     textInput: emailOrPhoneController,
                     textNode: emailNode,
-                    labelTitle: 'Email Address',
+                    labelTitle: 'Email or Phone Number',
                     validationMsg: (value) {
                       if (value.isEmpty) {
                         return 'Please Enter Email or Phone Number';
@@ -208,6 +208,7 @@ class _LogInState extends State<LogIn> {
     } else {
       isValid = false;
     }
+    isSubmit = true;
     if (isValid) {
       loginModel = LoginModel(
         emailOrPhone: emailOrPhoneController.text.trim(),
@@ -223,6 +224,7 @@ class _LogInState extends State<LogIn> {
       // print(response.body);
 
       if (response.statusCode == 200) {
+        isSubmit = false;
         var jsonResponse = jsonDecode(response.body);
 
         setState(() {
@@ -234,6 +236,7 @@ class _LogInState extends State<LogIn> {
               ),
             );
           } else if (jsonResponse['data']['user']['dateOfBirth'] == null) {
+            isSubmit = false;
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(

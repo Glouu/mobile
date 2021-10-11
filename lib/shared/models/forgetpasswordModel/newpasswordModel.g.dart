@@ -6,12 +6,11 @@ part of 'newpasswordModel.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-NewpasswordModel _$NewpasswordModelFromJson(Map<String, dynamic> json) {
-  return NewpasswordModel(
-    emailOrPhone: json['emailOrPhone'] as String,
-    password: json['password'] as String,
-  );
-}
+NewpasswordModel _$NewpasswordModelFromJson(Map<String, dynamic> json) =>
+    NewpasswordModel(
+      emailOrPhone: json['emailOrPhone'] as String,
+      password: json['password'] as String,
+    );
 
 Map<String, dynamic> _$NewpasswordModelToJson(NewpasswordModel instance) =>
     <String, dynamic>{

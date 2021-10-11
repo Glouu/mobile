@@ -138,6 +138,7 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
               onClick: () {},
               follow: true,
               onToggleChanged: (value) {
+                print(value);
                 setState(() {
                   this.value = value;
                 });

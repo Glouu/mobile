@@ -7,11 +7,11 @@ part of 'getsignupresponsemainModel.dart';
 // **************************************************************************
 
 GetsignupresponsemainModel _$GetsignupresponsemainModelFromJson(
-    Map<String, dynamic> json) {
-  return GetsignupresponsemainModel(
-    data: GetsignupresponseModel.fromJson(json['data'] as Map<String, dynamic>),
-  );
-}
+        Map<String, dynamic> json) =>
+    GetsignupresponsemainModel(
+      data:
+          GetsignupresponseModel.fromJson(json['data'] as Map<String, dynamic>),
+    );
 
 Map<String, dynamic> _$GetsignupresponsemainModelToJson(
         GetsignupresponsemainModel instance) =>
