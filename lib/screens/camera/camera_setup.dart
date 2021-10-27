@@ -5,6 +5,7 @@ import 'package:gloou/screens/camera/picture_camera/picture_camera.dart';
 import 'package:gloou/screens/camera/text/text_post.dart';
 import 'package:gloou/screens/camera/timepod/timepod.dart';
 import 'package:gloou/screens/general_home/general_home.dart';
+import 'package:keyboard_dismisser/keyboard_dismisser.dart';
 
 class CameraSetUp extends StatefulWidget {
   const CameraSetUp({Key? key}) : super(key: key);
@@ -18,6 +19,7 @@ class _CameraSetUpState extends State<CameraSetUp> {
 
   @override
   Widget build(BuildContext context) {
+    final isKeyboard = MediaQuery.of(context).viewInsets.bottom != 0;
     return Scaffold(
       body: getBody(_selectCameraIndex),
       // IndexedStack(
@@ -26,9 +28,9 @@ class _CameraSetUpState extends State<CameraSetUp> {
       // ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectCameraIndex,
-        selectedItemColor: Colors.white,
+        selectedItemColor: isKeyboard ? Colors.black : Colors.white,
         unselectedItemColor: Colors.grey[500],
-        backgroundColor: Colors.black,
+        backgroundColor: isKeyboard ? Colors.white : Colors.black,
         type: BottomNavigationBarType.fixed,
         showSelectedLabels: false,
         showUnselectedLabels: false,
@@ -70,7 +72,7 @@ class _CameraSetUpState extends State<CameraSetUp> {
     switch (index) {
       case 0:
         return PictureCamera(
-          pageNumbber: index,
+          pageNumber: index,
         );
       case 1:
         return Challenge(
@@ -85,7 +87,10 @@ class _CameraSetUpState extends State<CameraSetUp> {
           pageNumbber: index,
         );
       case 4:
-        return TextPost();
+        return KeyboardDismisser(
+          gestures: [GestureType.onTap],
+          child: TextPost(),
+        );
     }
     return Container(
       color: Colors.black,

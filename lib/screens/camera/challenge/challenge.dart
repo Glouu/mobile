@@ -27,6 +27,8 @@ class _ChallengeState extends State<Challenge> {
           isPictureTaker: false,
           isVideoTaker: true,
           isCameraRotate: true,
+          platformName: 'challenge',
+          onUploadMedia: () {},
         ));
   }
 }

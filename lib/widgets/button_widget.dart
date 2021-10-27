@@ -44,7 +44,7 @@ class ButtonWidget extends StatelessWidget {
           vertical: 18,
         ),
         textColor: Colors.white,
-        disabledColor: Theme.of(context).primaryColor.withOpacity(0.5),
+        disabledColor: buttonColor.withOpacity(0.5),
         disabledTextColor: Colors.white.withOpacity(0.5),
       );
 }

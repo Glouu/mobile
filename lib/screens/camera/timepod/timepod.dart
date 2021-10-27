@@ -20,6 +20,8 @@ class _TimePodState extends State<TimePod> {
           isPictureTaker: false,
           isVideoTaker: true,
           isCameraRotate: true,
+          platformName: 'timepod',
+          onUploadMedia: () {},
         ));
   }
 }

@@ -20,6 +20,8 @@ class _BottledMessageState extends State<BottledMessage> {
           isPictureTaker: true,
           isVideoTaker: true,
           isCameraRotate: false,
+          onUploadMedia: () {},
+          platformName: 'bottled',
         ));
   }
 }

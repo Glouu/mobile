@@ -31,7 +31,10 @@ class AddStoryWidget extends StatelessWidget {
                   height: 65,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    image: DecorationImage(image: MemoryImage(img)),
+                    image: DecorationImage(
+                      image: MemoryImage(img),
+                      fit: BoxFit.cover,
+                    ),
                   ),
                 ),
                 Positioned(

@@ -5,8 +5,14 @@ part 'normalmediaModel.g.dart';
 @JsonSerializable()
 class NormalmediaModel {
   final String caption;
+  final String scheduledDate;
+  final String type;
   final bool isText;
+  final bool allowComment;
   NormalmediaModel({
+    required this.scheduledDate,
+    required this.type,
+    required this.allowComment,
     required this.caption,
     required this.isText,
   });

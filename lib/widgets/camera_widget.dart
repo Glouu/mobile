@@ -1,9 +1,14 @@
+import 'dart:io';
+
 import 'package:camera/camera.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:gloou/screens/camera/display_file/display_file.dart';
 import 'package:gloou/screens/camera/display_picture/display_picture.dart';
 import 'package:gloou/screens/camera/display_video/display_video.dart';
 import 'package:gloou/screens/general_home/general_home.dart';
+import 'package:path_provider/path_provider.dart';
 
 class CameraWidget extends StatefulWidget {
   final int selectedPage;
@@ -11,6 +16,8 @@ class CameraWidget extends StatefulWidget {
   final bool isVideoTaker;
   final bool isPdfUpload;
   final bool isCameraRotate;
+  final String platformName;
+  final VoidCallback onUploadMedia;
   const CameraWidget({
     Key? key,
     required this.selectedPage,
@@ -18,6 +25,8 @@ class CameraWidget extends StatefulWidget {
     required this.isVideoTaker,
     required this.isPdfUpload,
     required this.isCameraRotate,
+    required this.onUploadMedia,
+    required this.platformName,
   }) : super(key: key);
 
   @override
@@ -116,7 +125,17 @@ class _CameraWidgetState extends State<CameraWidget> {
                       mainAxisSize: MainAxisSize.max,
                       children: [
                         IconButton(
-                          onPressed: () {},
+                          onPressed: () async {
+                            final result = FilePicker.platform.pickFiles(
+                              type: widget.platformName == 'normal' ||
+                                      widget.platformName == 'bottle'
+                                  ? FileType.media
+                                  : widget.platformName == 'timepod' ||
+                                          widget.platformName == 'challenge'
+                                      ? FileType.video
+                                      : FileType.any,
+                            );
+                          },
                           icon: Icon(
                             Icons.image_outlined,
                             color: Colors.white,
@@ -204,6 +223,7 @@ class _CameraWidgetState extends State<CameraWidget> {
                                 : Container(),
                         widget.isPdfUpload
                             ? GestureDetector(
+                                onTap: pickPdf,
                                 child: SvgPicture.asset(
                                   'assets/images/upload_pdf.svg',
                                 ),
@@ -263,7 +283,7 @@ class _CameraWidgetState extends State<CameraWidget> {
                   Navigator.pushAndRemoveUntil(
                     context,
                     MaterialPageRoute(builder: (context) => GeneralHome()),
-                        (route) => false,
+                    (route) => false,
                   );
                 });
               },
@@ -398,23 +418,7 @@ class _CameraWidgetState extends State<CameraWidget> {
         );
     }
 
-    return AppBar(
-      centerTitle: true,
-      backgroundColor: Colors.black,
-      elevation: 0.0,
-      iconTheme: IconThemeData(color: Colors.white),
-      leading: IconButton(
-          onPressed: () {
-            setState(() {
-              Navigator.pushAndRemoveUntil(
-                context,
-                MaterialPageRoute(builder: (context) => GeneralHome()),
-                (route) => false,
-              );
-            });
-          },
-          icon: Icon(Icons.close)),
-    );
+    return null;
   }
 
   void takePhoto() async {
@@ -425,7 +429,10 @@ class _CameraWidgetState extends State<CameraWidget> {
 
       await Navigator.of(context).push(
         MaterialPageRoute(
-          builder: (context) => DisplayPicture(imagePath: image.path),
+          builder: (context) => DisplayPicture(
+            imagePath: image.path,
+            platformName: widget.platformName,
+          ),
         ),
       );
     } catch (e) {
@@ -460,10 +467,41 @@ class _CameraWidgetState extends State<CameraWidget> {
           MaterialPageRoute(
             builder: (context) => DisplayVideo(
               videoPath: video.path,
+              platformName: widget.platformName,
             ),
           ),
         );
       });
     } catch (e) {}
+  }
+
+  void pickPdf() async {
+    final result = await FilePicker.platform.pickFiles(
+      allowedExtensions: ['pdf'],
+      type: FileType.custom,
+    );
+    if (result == null) return;
+
+    final file = result.files.first;
+
+    final newFile = await saveFilePermanently(file);
+
+    await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => DisplayFile(
+          filePath: newFile.path,
+          platformName: widget.platformName,
+        ),
+      ),
+    );
+
+    print(file.path);
+  }
+
+  Future<File> saveFilePermanently(PlatformFile file) async {
+    final appStorage = await getApplicationDocumentsDirectory();
+    final newFile = File('${appStorage.path}/${file.name}');
+
+    return File(file.path!).copy(newFile.path);
   }
 }

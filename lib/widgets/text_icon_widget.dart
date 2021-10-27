@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bounce/flutter_bounce.dart';
 
 class TextIconWidget extends StatelessWidget {
   final IconData icons;
@@ -19,11 +20,17 @@ class TextIconWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        IconButton(
+        Bounce(
+          child: Icon(
+            icons,
+            color: color,
+            size: iconSize,
+          ),
+          duration: Duration(milliseconds: 300),
           onPressed: onPress,
-          icon: Icon(icons),
-          color: color,
-          iconSize: iconSize,
+        ),
+        SizedBox(
+          width: 5,
         ),
         Text(
           value,

@@ -1,13 +1,9 @@
-import 'package:camera/came'
-    'ra.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
-import 'package:gloou/screens/camera/display_picture/display_picture.dart';
 import 'package:gloou/widgets/camera_widget.dart';
 
 class PictureCamera extends StatefulWidget {
-  final int pageNumbber;
-  const PictureCamera({Key? key, required this.pageNumbber}) : super(key: key);
+  final int pageNumber;
+  const PictureCamera({Key? key, required this.pageNumber}) : super(key: key);
 
   @override
   _PictureCameraState createState() => _PictureCameraState();
@@ -19,11 +15,13 @@ class _PictureCameraState extends State<PictureCamera> {
     return Container(
         color: Colors.black,
         child: CameraWidget(
-          selectedPage: widget.pageNumbber,
+          selectedPage: widget.pageNumber,
           isPdfUpload: true,
           isPictureTaker: true,
           isVideoTaker: true,
           isCameraRotate: false,
+          onUploadMedia: () {},
+          platformName: 'normal',
         ));
   }
 }

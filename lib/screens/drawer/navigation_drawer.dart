@@ -6,6 +6,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:gloou/screens/edit_profile/edit_profile.dart';
 import 'package:gloou/screens/log_in/log_in.dart';
+import 'package:gloou/screens/setttings/settings.dart';
 import 'package:gloou/shared/api_environment/api_utils.dart';
 import 'package:gloou/shared/colors/colors.dart';
 import 'package:gloou/shared/secure_storage/secure_storage.dart';
@@ -155,17 +156,17 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
               follow: false,
               onToggleChanged: (value) {},
             ),
-            SizedBox(
-              height: 4,
-            ),
-            buildMenuItem(
-              color: Colors.black,
-              text: 'Bookmarks',
-              icon: Icons.bookmark_border_rounded,
-              onClick: () => selectedPage(context, 3),
-              follow: false,
-              onToggleChanged: (value) {},
-            ),
+            // SizedBox(
+            //   height: 4,
+            // ),
+            // buildMenuItem(
+            //   color: Colors.black,
+            //   text: 'Bookmarks',
+            //   icon: Icons.bookmark_border_rounded,
+            //   onClick: () => selectedPage(context, 3),
+            //   follow: false,
+            //   onToggleChanged: (value) {},
+            // ),
             SizedBox(
               height: 4,
             ),
@@ -177,17 +178,17 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
               follow: false,
               onToggleChanged: (value) {},
             ),
-            SizedBox(
-              height: 4,
-            ),
-            buildMenuItem(
-              color: Colors.black,
-              text: 'Help',
-              icon: Icons.help_outline,
-              onClick: () => selectedPage(context, 5),
-              follow: false,
-              onToggleChanged: (value) {},
-            ),
+            // SizedBox(
+            //   height: 4,
+            // ),
+            // buildMenuItem(
+            //   color: Colors.black,
+            //   text: 'Help',
+            //   icon: Icons.help_outline,
+            //   onClick: () => selectedPage(context, 5),
+            //   follow: false,
+            //   onToggleChanged: (value) {},
+            // ),
             SizedBox(
               height: MediaQuery.of(context).size.height / 8,
             ),
@@ -320,20 +321,26 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
         );
         break;
       case 1:
-        print('Group');
+        print('Pod Cast');
         break;
       case 2:
-        print('Bookmark');
+        print('Groups');
         break;
-      case 3:
-        print('Settings');
-        break;
+      // case 3:
+      //   print('Bookmarks');
+      //   break;
       case 4:
-        print('Help');
+        print('Settings');
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => Settings(),
+          ),
+        );
         break;
-      case 5:
-        print('Help');
-        break;
+      // case 5:
+      //   print('Help');
+      //   break;
       case 6:
         setState(() {
           secureStorage.deleteSecureData('token');
