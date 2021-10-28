@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bounce/flutter_bounce.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:gloou/screens/camera/camera_setup.dart';
 import 'package:gloou/screens/drawer/navigation_drawer.dart';
 import 'package:gloou/screens/explore/explore.dart';
 import 'package:gloou/screens/feeds/feeds.dart';
+import 'package:gloou/screens/message/message.dart';
 import 'package:gloou/screens/profile/profile.dart';
 import 'package:gloou/shared/colors/colors.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -105,8 +107,18 @@ class _GeneralHomeState extends State<GeneralHome> {
           ],
         ),
         actions: [
-          IconButton(
-              onPressed: () {}, icon: Icon(Icons.messenger_outline_rounded))
+          // IconButton(
+          //     onPressed: () {}, icon: Icon(Icons.messenger_outline_rounded))
+          Bounce(
+            child: SvgPicture.asset('assets/images/chat_icon.svg'),
+            duration: Duration(milliseconds: 500),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => Message()),
+              );
+            },
+          )
         ],
       );
     }

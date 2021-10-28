@@ -12,6 +12,7 @@ import 'package:gloou/screens/log_in/log_in.dart';
 import 'package:gloou/screens/story_page/story_page.dart';
 import 'package:gloou/shared/api_environment/api_utils.dart';
 import 'package:gloou/shared/colors/colors.dart';
+import 'package:gloou/shared/models/commentlikeModel/commentlikeModel.dart';
 import 'package:gloou/shared/models/commentreplyModel/commentreplyModel.dart';
 import 'package:gloou/shared/models/postcommentModel/postcommentModel.dart';
 import 'package:gloou/shared/models/postidModel/postidModel.dart';
@@ -82,6 +83,7 @@ class _FeedsState extends State<Feeds> {
   late PostidModel _postidModel;
   late PostcommentModel _postcommentModel;
   late CommentreplyModel _commentreplyModel;
+  late CommentlikeModel _commentlikeModel;
 
   fetchStory({int page = 1, int limit = 10}) async {
     var token = await tokenLogic.getToken();
@@ -521,8 +523,20 @@ class _FeedsState extends State<Feeds> {
                                           });
                                           showSheet();
                                         },
-                                        onPressShare: () {},
-                                        onPressSave: () {},
+                                        onPressShare: () {
+                                          posts[i]['isReposted']
+                                              ? onSubmitShare(
+                                                  posts[i]['id'], i, false)
+                                              : onSubmitShare(
+                                                  posts[i]['id'], i, true);
+                                        },
+                                        onPressSave: () {
+                                          posts[i]['isSaved']
+                                              ? onSubmitSave(
+                                                  posts[i]['id'], i, false)
+                                              : onSubmitSave(
+                                                  posts[i]['id'], i, true);
+                                        },
                                         isLike: posts[i]['isLiked'],
                                         isShare: posts[i]['isReposted'],
                                         isSave: posts[i]['isSaved'],
@@ -740,6 +754,11 @@ class _FeedsState extends State<Feeds> {
                                                                         () {
                                                                       setState(
                                                                           () {
+                                                                        if (comments
+                                                                            .isNotEmpty) {
+                                                                          comments
+                                                                              .clear();
+                                                                        }
                                                                         commentValue =
                                                                             posts[i]['caption'];
                                                                         postId =
@@ -771,7 +790,19 @@ class _FeedsState extends State<Feeds> {
                                                                             'numberOfReposts']
                                                                         .toString(),
                                                                     onPress:
-                                                                        () {},
+                                                                        () {
+                                                                      posts[i][
+                                                                              'isReposted']
+                                                                          ? onSubmitShare(
+                                                                              posts[i][
+                                                                                  'id'],
+                                                                              i,
+                                                                              false)
+                                                                          : onSubmitShare(
+                                                                              posts[i]['id'],
+                                                                              i,
+                                                                              true);
+                                                                    },
                                                                     color: posts[i]
                                                                             [
                                                                             'isReposted']
@@ -781,7 +812,19 @@ class _FeedsState extends State<Feeds> {
                                                                   ),
                                                                   Bounce(
                                                                     onPressed:
-                                                                        () {},
+                                                                        () {
+                                                                      posts[i][
+                                                                              'isSaved']
+                                                                          ? onSubmitSave(
+                                                                              posts[i][
+                                                                                  'id'],
+                                                                              i,
+                                                                              false)
+                                                                          : onSubmitSave(
+                                                                              posts[i]['id'],
+                                                                              i,
+                                                                              true);
+                                                                    },
                                                                     child: Icon(
                                                                       posts[i][
                                                                               'isSaved']
@@ -789,6 +832,12 @@ class _FeedsState extends State<Feeds> {
                                                                               .bookmark
                                                                           : Icons
                                                                               .bookmark_border_rounded,
+                                                                      color: posts[i]
+                                                                              [
+                                                                              'isSaved']
+                                                                          ? mainColor
+                                                                          : Colors
+                                                                              .white,
                                                                     ),
                                                                     duration: Duration(
                                                                         milliseconds:
@@ -973,6 +1022,11 @@ class _FeedsState extends State<Feeds> {
                                                                   .toString(),
                                                               onPress: () {
                                                                 setState(() {
+                                                                  if (comments
+                                                                      .isNotEmpty) {
+                                                                    comments
+                                                                        .clear();
+                                                                  }
                                                                   commentValue =
                                                                       posts[i][
                                                                           'caption'];
@@ -984,7 +1038,15 @@ class _FeedsState extends State<Feeds> {
                                                                       .then(
                                                                           (data) {
                                                                     setState(
-                                                                        () {});
+                                                                        () {
+                                                                      comments =
+                                                                          data[
+                                                                              'data'];
+                                                                      _isLoadingComments =
+                                                                          false;
+                                                                      _sheetController
+                                                                          .rebuild();
+                                                                    });
                                                                   });
                                                                 });
                                                                 showSheet();
@@ -999,7 +1061,22 @@ class _FeedsState extends State<Feeds> {
                                                               value: posts[i][
                                                                       'numberOfReposts']
                                                                   .toString(),
-                                                              onPress: () {},
+                                                              onPress: () {
+                                                                posts[i][
+                                                                        'isReposted']
+                                                                    ? onSubmitShare(
+                                                                        posts[i]
+                                                                            [
+                                                                            'id'],
+                                                                        i,
+                                                                        false)
+                                                                    : onSubmitShare(
+                                                                        posts[i]
+                                                                            [
+                                                                            'id'],
+                                                                        i,
+                                                                        true);
+                                                              },
                                                               color: posts[i][
                                                                       'isReposted']
                                                                   ? mainColor
@@ -1007,7 +1084,22 @@ class _FeedsState extends State<Feeds> {
                                                                       .black,
                                                             ),
                                                             Bounce(
-                                                              onPressed: () {},
+                                                              onPressed: () {
+                                                                posts[i][
+                                                                        'isSaved']
+                                                                    ? onSubmitSave(
+                                                                        posts[i]
+                                                                            [
+                                                                            'id'],
+                                                                        i,
+                                                                        false)
+                                                                    : onSubmitSave(
+                                                                        posts[i]
+                                                                            [
+                                                                            'id'],
+                                                                        i,
+                                                                        true);
+                                                              },
                                                               child: Icon(
                                                                 posts[i][
                                                                         'isSaved']
@@ -1216,10 +1308,17 @@ class _FeedsState extends State<Feeds> {
                                                                             onPress:
                                                                                 () {
                                                                               setState(() {
+                                                                                if (comments.isNotEmpty) {
+                                                                                  comments.clear();
+                                                                                }
                                                                                 commentValue = posts[i]['caption'];
                                                                                 postId = posts[i]['id'];
                                                                                 getComments(postId).then((data) {
-                                                                                  setState(() {});
+                                                                                  setState(() {
+                                                                                    comments = data['data'];
+                                                                                    _isLoadingComments = false;
+                                                                                    _sheetController.rebuild();
+                                                                                  });
                                                                                 });
                                                                               });
                                                                               showSheet();
@@ -1235,14 +1334,18 @@ class _FeedsState extends State<Feeds> {
                                                                             value:
                                                                                 posts[i]['numberOfReposts'].toString(),
                                                                             onPress:
-                                                                                () {},
+                                                                                () {
+                                                                              posts[i]['isReposted'] ? onSubmitShare(posts[i]['id'], i, false) : onSubmitShare(posts[i]['id'], i, true);
+                                                                            },
                                                                             color: posts[i]['isReposted']
                                                                                 ? mainColor
                                                                                 : Colors.white,
                                                                           ),
                                                                           Bounce(
                                                                             onPressed:
-                                                                                () {},
+                                                                                () {
+                                                                              posts[i]['isSaved'] ? onSubmitSave(posts[i]['id'], i, false) : onSubmitSave(posts[i]['id'], i, true);
+                                                                            },
                                                                             duration:
                                                                                 Duration(milliseconds: 500),
                                                                             child:
@@ -1298,6 +1401,7 @@ class _FeedsState extends State<Feeds> {
       );
 
   Widget buildMainSheet(context, state) {
+    var size = MediaQuery.of(context).size;
     return StatefulBuilder(
       builder: (BuildContext context, void Function(void Function()) setState) {
         return Material(
@@ -1311,54 +1415,82 @@ class _FeedsState extends State<Feeds> {
               ),
               _isLoadingComments
                   ? Container(
-                      child: Center(child: CircularProgressIndicator()),
-                    )
+                      height: (size.height) / 2,
+                      child: Center(child: CircularProgressIndicator()))
                   : SingleChildScrollView(
                       child: Column(
                         children: List.generate(comments.length, (i) {
                           // print(comments[i]['image']);
-                          return Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Expanded(
-                                child: Row(
+                          return comments.length > 0
+                              ? Column(
                                   children: [
-                                    CircleAvatar(
-                                      radius: 24,
-                                      backgroundImage: MemoryImage(convertImage
-                                          .formatBase64(comments[i]['image'])),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Expanded(
+                                          child: Row(
+                                            children: [
+                                              CircleAvatar(
+                                                radius: 24,
+                                                backgroundImage: MemoryImage(
+                                                    convertImage.formatBase64(
+                                                        comments[i]['image'])),
+                                              ),
+                                              SizedBox(
+                                                width: 16,
+                                              ),
+                                              Expanded(
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    Text(
+                                                      '@' +
+                                                          comments[i]
+                                                              ['userName'],
+                                                      style: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
+                                                    ),
+                                                    SizedBox(
+                                                      height: 10,
+                                                    ),
+                                                    Text(comments[i]['content'])
+                                                  ],
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        Bounce(
+                                          child: comments[i]['isLikedByMe']
+                                              ? Icon(
+                                                  Icons.favorite,
+                                                  color: Colors.red,
+                                                )
+                                              : Icon(Icons
+                                                  .favorite_border_rounded),
+                                          duration: Duration(milliseconds: 300),
+                                          onPressed: () {
+                                            comments[i]['isLikedByMe']
+                                                ? onSubmitCommentLike(
+                                                    comments[i]['id'], i, false)
+                                                : onSubmitCommentLike(
+                                                    comments[i]['id'], i, true);
+                                          },
+                                        )
+                                      ],
                                     ),
                                     SizedBox(
-                                      width: 16,
-                                    ),
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            '@' + comments[i]['userName'],
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                          SizedBox(
-                                            height: 10,
-                                          ),
-                                          Text(comments[i]['content'])
-                                        ],
-                                      ),
+                                      height: 30,
                                     ),
                                   ],
-                                ),
-                              ),
-                              Bounce(
-                                child: Icon(Icons.favorite_border_rounded),
-                                duration: Duration(milliseconds: 300),
-                                onPressed: () {},
-                              )
-                            ],
-                          );
+                                )
+                              : Container(
+                                  child: Text('No comment for this post'),
+                                );
                         }),
                       ),
                     ),
@@ -1493,7 +1625,11 @@ class _FeedsState extends State<Feeds> {
     );
   }
 
-  void onSubmitLike(String postId, int i, bool isCreate) async {
+  void onSubmitLike(
+    String postId,
+    int i,
+    bool isCreate,
+  ) async {
     setState(() {
       posts[i]['isLiked'] = !posts[i]['isLiked'];
     });
@@ -1575,13 +1711,148 @@ class _FeedsState extends State<Feeds> {
     }
   }
 
-  void onSubmitCommentLike(String postId) async {
+  void onSubmitCommentLike(
+    String commentId,
+    int i,
+    bool isCreate,
+  ) async {
+    setState(() {
+      comments[i]['isLikedByMe'] = !comments[i]['isLikedByMe'];
+      _sheetController.rebuild();
+    });
 
+    var token = await tokenLogic.getToken();
+    _commentlikeModel = CommentlikeModel(
+      commentId: commentId,
+      postId: postId,
+    );
+    print(_commentlikeModel.commentId);
+
+    var url = isCreate
+        ? Uri.parse(ApiUtils.API_URL + '/Post/Comment/Like')
+        : Uri.parse(ApiUtils.API_URL + '/Post/Comment/Like');
+    var httpClient = http.Client();
+    var response = isCreate
+        ? await httpClient.post(
+            url,
+            body: jsonEncode(_commentlikeModel.toJson()),
+            headers: {
+              HttpHeaders.contentTypeHeader: 'application/json',
+              HttpHeaders.authorizationHeader: 'Bearer $token'
+            },
+          )
+        : await httpClient.delete(
+            url,
+            body: jsonEncode(_commentlikeModel.toJson()),
+            headers: {
+              HttpHeaders.contentTypeHeader: 'application/json',
+              HttpHeaders.authorizationHeader: 'Bearer $token'
+            },
+          );
+
+    if (response.statusCode == 200) {
+      var responseDecode = jsonEncode(response.body);
+    } else {
+      setState(() {
+        comments[i]['isLikedByMe'] = !comments[i]['isLikedByMe'];
+      });
+    }
   }
 
-  void onSubmitCommentReply() async {}
+  void onSubmitCommentReply(
+    String commentId,
+  ) async {}
 
-  void onSubmitShare() async {}
+  void onSubmitShare(
+    String postId,
+    int i,
+    bool isCreate,
+  ) async {
+    setState(() {
+      posts[i]['isReposted'] = !posts[i]['isReposted'];
+    });
+    var token = await tokenLogic.getToken();
 
-  void onSubmitSave() async {}
+    _postidModel = PostidModel(postId: postId);
+
+    var shareUrl = isCreate
+        ? Uri.parse(ApiUtils.API_URL + '/Post/Repost/Create')
+        : Uri.parse(ApiUtils.API_URL + '/Post/Repost/Remove');
+    print(shareUrl);
+    var httpClient = http.Client();
+    var shareResponse = isCreate
+        ? await httpClient.post(
+            shareUrl,
+            body: jsonEncode(_postidModel.toJson()),
+            headers: {
+              HttpHeaders.contentTypeHeader: 'application/json',
+              HttpHeaders.authorizationHeader: 'Bearer $token'
+            },
+          )
+        : await httpClient.post(
+            shareUrl,
+            body: jsonEncode(_postidModel.toJson()),
+            headers: {
+              HttpHeaders.contentTypeHeader: 'application/json',
+              HttpHeaders.authorizationHeader: 'Bearer $token'
+            },
+          );
+
+    if (shareResponse.statusCode == 200) {
+      var shareResponseDecode = jsonDecode(shareResponse.body);
+      setState(() {
+        if (shareResponseDecode['data']['total'] != null) {
+          posts[i]['numberOfReposts'] = shareResponseDecode['data']['total'];
+        } else {
+          posts[i]['numberOfReposts'] = posts[i]['numberOfReposts'] - 1;
+        }
+      });
+    } else {
+      setState(() {
+        posts[i]['isReposted'] = !posts[i]['isReposted'];
+      });
+    }
+  }
+
+  void onSubmitSave(
+    String postId,
+    int i,
+    bool isCreate,
+  ) async {
+    setState(() {
+      posts[i]['isSaved'] = !posts[i]['isSaved'];
+    });
+    var token = await tokenLogic.getToken();
+
+    _postidModel = PostidModel(postId: postId);
+
+    var url = isCreate
+        ? Uri.parse(ApiUtils.API_URL + '/Post/Save/Create')
+        : Uri.parse(ApiUtils.API_URL + '/Post/Save/Remove');
+    var httpClient = http.Client();
+    var saveResponse = isCreate
+        ? await httpClient.post(
+            url,
+            body: jsonEncode(_postidModel.toJson()),
+            headers: {
+              HttpHeaders.contentTypeHeader: 'application/json',
+              HttpHeaders.authorizationHeader: 'Bearer $token'
+            },
+          )
+        : await httpClient.delete(
+            url,
+            body: jsonEncode(_postidModel.toJson()),
+            headers: {
+              HttpHeaders.contentTypeHeader: 'application/json',
+              HttpHeaders.authorizationHeader: 'Bearer $token'
+            },
+          );
+
+    if (saveResponse.statusCode == 200) {
+    } else {
+      setState(() {
+        posts[i]['isSaved'] = !posts[i]['isSaved'];
+      });
+    }
+  }
 }

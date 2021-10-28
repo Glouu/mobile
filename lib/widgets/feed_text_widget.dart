@@ -154,6 +154,7 @@ class FeedTextWidget extends StatelessWidget {
                     Bounce(
                       child: Icon(
                         isSave ? Icons.bookmark : Icons.bookmark_border_rounded,
+                        color: isSave ? mainColor : Colors.black,
                       ),
                       duration: Duration(milliseconds: 500),
                       onPressed: onPressSave,
