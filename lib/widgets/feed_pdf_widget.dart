@@ -79,7 +79,7 @@ class _FeedPdfWidgetState extends State<FeedPdfWidget> {
               MaterialPageRoute(
                 builder: (context) => ReadPdf(
                   filePath: pdfFile.path,
-                  fileName: widget.fileName,
+                  fileName: widget.mainFileName,
                 ),
               ),
             );
@@ -112,7 +112,7 @@ class _FeedPdfWidgetState extends State<FeedPdfWidget> {
                                 MaterialPageRoute(
                                   builder: (context) => ReadPdf(
                                     filePath: pdfFile.path,
-                                    fileName: widget.fileName,
+                                    fileName: widget.mainFileName,
                                   ),
                                 ),
                               );

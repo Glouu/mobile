@@ -4,11 +4,15 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:gloou/screens/edit_profile/edit_profile.dart';
 import 'package:gloou/screens/log_in/log_in.dart';
+import 'package:gloou/screens/profile/listOfUserChallenge/listOfUserChallenge.dart';
+import 'package:gloou/screens/profile/listOfUserPdf/listOfUserPdf.dart';
 import 'package:gloou/screens/profile/listOfUserPost/listOfUserPost.dart';
+import 'package:gloou/screens/profile/listOfUserTimePod/listOfUserTimePod.dart';
 import 'package:gloou/shared/api_environment/api_utils.dart';
 import 'package:gloou/shared/token/token.dart';
 import 'package:gloou/shared/utilities/convert_image.dart';
 import 'package:http/http.dart' as http;
+import 'package:numeral/numeral.dart';
 
 class Profile extends StatefulWidget {
   const Profile({Key? key}) : super(key: key);
@@ -25,22 +29,38 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
   final TokenLogic tokenLogic = TokenLogic();
 
   late Map<String, dynamic> userInfo;
+  late List followerData;
+  late List followingData;
   bool isCircular = true;
 
+  late Map<String, dynamic> countData;
+
+  bool isCountingLoading = true;
+  bool isFollowerLoading = true;
+  bool isFollowingLoading = true;
+
   bool isPostCircular = true;
+  bool isPdfPostCircular = true;
   bool isChallengeCircular = true;
   bool isBMessageCircular = true;
   bool isTimeCircular = true;
 
   late bool isPostEmpty;
+  late bool isPdfPostEmpty;
   late bool isChallengeEmpty;
   late bool isBMessageEmpty;
   late bool isTimePodEmpty;
 
   late List postData;
+  late List postDataPdf;
+  late List postDataChallenge;
+  late List postDataTimePod;
+
+  late String token;
 
   init() async {
     var token = await tokenLogic.getToken();
+    this.token = await tokenLogic.getToken();
     if (token != null) {
       var url = Uri.parse(ApiUtils.API_URL + '/User/GetUser');
       var httpClient = http.Client();
@@ -93,6 +113,121 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
     }
   }
 
+  fetchFollower(String userId) async {
+    var token = await tokenLogic.getToken();
+    if (token != null) {
+      var url =
+          Uri.parse(ApiUtils.API_URL + '/Profile/GetFollowers?userID=$userId');
+      var httpClient = http.Client();
+      var response = await httpClient.get(
+        url,
+        headers: {
+          HttpHeaders.contentTypeHeader: 'application/json',
+          HttpHeaders.authorizationHeader: 'Bearer $token'
+        },
+      );
+      if (response.statusCode == 200) {
+        var result = jsonDecode(response.body);
+        return result;
+      } else {}
+    } else {
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(
+          builder: (context) => LogIn(),
+        ),
+        (route) => false,
+      );
+    }
+  }
+
+  fetchFollowing(String userId) async {
+    var token = await tokenLogic.getToken();
+    if (token != null) {
+      var url =
+          Uri.parse(ApiUtils.API_URL + '/Profile/GetFollowing?userID=$userId');
+      var httpClient = http.Client();
+      var response = await httpClient.get(
+        url,
+        headers: {
+          HttpHeaders.contentTypeHeader: 'application/json',
+          HttpHeaders.authorizationHeader: 'Bearer $token'
+        },
+      );
+      if (response.statusCode == 200) {
+        var result = jsonDecode(response.body);
+        return result;
+      } else {}
+    } else {
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(
+          builder: (context) => LogIn(),
+        ),
+        (route) => false,
+      );
+    }
+  }
+
+  fetchCountDetails() async {
+    var token = await tokenLogic.getToken();
+    if (token != null) {
+      var url = Uri.parse(ApiUtils.API_URL + '/Profile/GetDetails');
+      var httpClient = http.Client();
+      var response = await httpClient.get(
+        url,
+        headers: {
+          HttpHeaders.contentTypeHeader: 'application/json',
+          HttpHeaders.authorizationHeader: 'Bearer $token'
+        },
+      );
+      if (response.statusCode == 200) {
+        var result = jsonDecode(response.body);
+        return result;
+      } else {
+        print('this is count error: ${jsonDecode(response.body)}');
+      }
+    } else {
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(
+          builder: (context) => LogIn(),
+        ),
+        (route) => false,
+      );
+    }
+  }
+
+  fetchPdfFiles() async {
+    var token = await tokenLogic.getToken();
+    if (token != null) {
+      var url = Uri.parse(ApiUtils.API_URL + '/Post/GetUserPostFiles?type=pdf');
+      var httpClient = http.Client();
+      var response = await httpClient.get(
+        url,
+        headers: {
+          HttpHeaders.contentTypeHeader: 'application/json',
+          HttpHeaders.authorizationHeader: 'Bearer $token'
+        },
+      );
+      if (response.statusCode == 200) {
+        var result = jsonDecode(response.body);
+        return result;
+      } else {
+        print(
+            'this is count error: ${jsonDecode(response.body)} and the url is $url');
+      }
+    } else {
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(
+          builder: (context) => LogIn(),
+        ),
+        (route) => false,
+      );
+    }
+  }
+
   _onRefresh() async {
     var list = await fetchPost(page: 1);
     var listData = list['data'];
@@ -110,6 +245,31 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
       setState(() {
         userInfo = data['data'];
         isCircular = false;
+        fetchCountDetails().then((data) {
+          setState(() {
+            countData = data['data'];
+            isCountingLoading = false;
+          });
+        });
+      });
+    });
+    fetchPdfFiles().then((data) {
+      setState(() {
+        var pdfData = data['data'];
+
+        if (data != null) {
+          if (pdfData.length > 0) {
+            postDataPdf = data['data'];
+            isPdfPostEmpty = false;
+            isPdfPostCircular = false;
+          } else {
+            isPdfPostEmpty = true;
+            isPdfPostCircular = false;
+          }
+        } else {
+          isPdfPostEmpty = true;
+          isPdfPostCircular = false;
+        }
       });
     });
     fetchPost().then((data) {
@@ -118,15 +278,25 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
         if (data != null) {
           if (initialData.length > 0) {
             postData = initialData;
+            postDataChallenge = initialData
+                .where((chalData) => chalData['type'] == 'challenge')
+                .toList();
+            postDataTimePod = initialData
+                .where((timeData) => timeData['type'] == 'timepod')
+                .toList();
             isPostEmpty = false;
             isPostCircular = false;
           } else {
             isPostEmpty = true;
             isPostCircular = false;
+            postDataTimePod = [];
+            postDataChallenge = [];
           }
         } else {
           isPostEmpty = true;
           isPostCircular = false;
+          postDataTimePod = [];
+          postDataChallenge = [];
         }
       });
     });
@@ -212,17 +382,23 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
                 children: [
                   buildNumber(
                     context,
-                    '435',
+                    isCountingLoading
+                        ? '---'
+                        : Numeral(countData['feedCount']).value(),
                     'Feed',
                   ),
                   buildNumber(
                     context,
-                    '101k',
+                    isCountingLoading
+                        ? '---'
+                        : Numeral(countData['followerCount']).value(),
                     'Followers',
                   ),
                   buildNumber(
                     context,
-                    '75k',
+                    isCountingLoading
+                        ? '---'
+                        : Numeral(countData['followingCount']).value(),
                     'Following',
                   ),
                 ],
@@ -331,25 +507,44 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
                               ? Center(
                                   child: Text('You don\'t have any post'),
                                 )
-                              : ListOfUserPost(postData: postData),
-                      Container(
-                        child: Text(
-                          'Videos Here',
-                          style: TextStyle(fontSize: 30),
-                        ),
-                      ),
-                      Container(
-                        child: Text(
-                          'Time pod here',
-                          style: TextStyle(fontSize: 30),
-                        ),
-                      ),
-                      Container(
-                        child: Text(
-                          'Pdf Here',
-                          style: TextStyle(fontSize: 30),
-                        ),
-                      ),
+                              : ListOfUserPost(
+                                  postData: postData,
+                                  token: token,
+                                ),
+                      isPostCircular
+                          ? Center(
+                              child: CircularProgressIndicator(),
+                            )
+                          : postDataChallenge.length > 0
+                              ? ListOfUserChallenge(
+                                  postData: postDataChallenge,
+                                  token: token,
+                                )
+                              : Center(
+                                  child: Text('You don\'t have any post'),
+                                ),
+                      isPostCircular
+                          ? Center(
+                              child: CircularProgressIndicator(),
+                            )
+                          : postDataTimePod.length > 0
+                              ? ListOfUserTimePod(
+                                  postData: postDataTimePod, token: token)
+                              : Center(
+                                  child: Text('You don\'t have any post'),
+                                ),
+                      isPdfPostCircular
+                          ? Center(
+                              child: CircularProgressIndicator(),
+                            )
+                          : isPdfPostEmpty
+                              ? Center(
+                                  child: Text('You don\'t have any post'),
+                                )
+                              : ListOfUserPdf(
+                                  token: token,
+                                  postData: postDataPdf,
+                                ),
                     ],
                   ),
                 ),

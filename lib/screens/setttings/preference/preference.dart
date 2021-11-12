@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gloou/screens/setttings/preference/interests/interests.dart';
 import 'package:gloou/shared/colors/colors.dart';
 import 'package:gloou/shared/secure_storage/secure_storage.dart';
 import 'package:gloou/widgets/toggle_widget.dart';
@@ -74,7 +75,12 @@ class _PreferenceState extends State<Preference> {
                   text: 'Interests',
                   isToggle: false,
                   onToggleChange: (value) {},
-                  onClick: () {},
+                  onClick: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => Interest()),
+                    );
+                  },
                   isSideText: false,
                 ),
                 SizedBox(

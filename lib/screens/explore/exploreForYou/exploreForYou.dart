@@ -86,7 +86,11 @@ class _ExploreForYouState extends State<ExploreForYou> {
                   crossAxisCount: 3,
                 ),
                 itemBuilder: (context, i) {
-                  return CardWidget(index: i);
+                  return CardWidget(
+                    mediaName: '',
+                    token: '',
+                    mediaType: '',
+                  );
                 }, // CardWidget(index: i),
                 itemCount: 3,
               )
@@ -142,7 +146,11 @@ class _ExploreForYouState extends State<ExploreForYou> {
                   crossAxisCount: 3,
                 ),
                 itemBuilder: (context, i) {
-                  return CardWidget(index: i);
+                  return CardWidget(
+                    mediaName: '',
+                    token: '',
+                    mediaType: '',
+                  );
                 }, // CardWidget(index: i),
                 itemCount: 3,
               )
@@ -198,7 +206,11 @@ class _ExploreForYouState extends State<ExploreForYou> {
                   crossAxisCount: 3,
                 ),
                 itemBuilder: (context, i) {
-                  return CardWidget(index: i);
+                  return CardWidget(
+                    mediaName: '',
+                    token: '',
+                    mediaType: '',
+                  );
                 }, // CardWidget(index: i),
                 itemCount: 3,
               )
@@ -254,7 +266,11 @@ class _ExploreForYouState extends State<ExploreForYou> {
                   crossAxisCount: 3,
                 ),
                 itemBuilder: (context, i) {
-                  return CardWidget(index: i);
+                  return CardWidget(
+                    mediaName: '',
+                    token: '',
+                    mediaType: '',
+                  );
                 }, // CardWidget(index: i),
                 itemCount: 3,
               )
@@ -310,7 +326,11 @@ class _ExploreForYouState extends State<ExploreForYou> {
                   crossAxisCount: 3,
                 ),
                 itemBuilder: (context, i) {
-                  return CardWidget(index: i);
+                  return CardWidget(
+                    mediaName: '',
+                    token: '',
+                    mediaType: '',
+                  );
                 }, // CardWidget(index: i),
                 itemCount: 3,
               )
@@ -366,7 +386,11 @@ class _ExploreForYouState extends State<ExploreForYou> {
                   crossAxisCount: 3,
                 ),
                 itemBuilder: (context, i) {
-                  return CardWidget(index: i);
+                  return CardWidget(
+                    mediaName: '',
+                    token: '',
+                    mediaType: '',
+                  );
                 }, // CardWidget(index: i),
                 itemCount: 3,
               )
@@ -422,7 +446,11 @@ class _ExploreForYouState extends State<ExploreForYou> {
                   crossAxisCount: 3,
                 ),
                 itemBuilder: (context, i) {
-                  return CardWidget(index: i);
+                  return CardWidget(
+                    mediaName: '',
+                    token: '',
+                    mediaType: '',
+                  );
                 }, // CardWidget(index: i),
                 itemCount: 3,
               )
@@ -478,7 +506,11 @@ class _ExploreForYouState extends State<ExploreForYou> {
                   crossAxisCount: 3,
                 ),
                 itemBuilder: (context, i) {
-                  return CardWidget(index: i);
+                  return CardWidget(
+                    mediaName: '',
+                    token: '',
+                    mediaType: '',
+                  );
                 }, // CardWidget(index: i),
                 itemCount: 3,
               )
@@ -534,7 +566,11 @@ class _ExploreForYouState extends State<ExploreForYou> {
                   crossAxisCount: 3,
                 ),
                 itemBuilder: (context, i) {
-                  return CardWidget(index: i);
+                  return CardWidget(
+                    mediaName: '',
+                    token: '',
+                    mediaType: '',
+                  );
                 }, // CardWidget(index: i),
                 itemCount: 3,
               )
@@ -590,7 +626,11 @@ class _ExploreForYouState extends State<ExploreForYou> {
                   crossAxisCount: 3,
                 ),
                 itemBuilder: (context, i) {
-                  return CardWidget(index: i);
+                  return CardWidget(
+                    mediaName: '',
+                    token: '',
+                    mediaType: '',
+                  );
                 }, // CardWidget(index: i),
                 itemCount: 3,
               )

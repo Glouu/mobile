@@ -17,28 +17,23 @@ class ButtonWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) => RaisedButton(
         onPressed: isButtonActive ? null : onClick,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            isButtonActive
-                ? CircularProgressIndicator(
-                    color: Colors.white,
-                  )
-                : Container(),
-            SizedBox(
-              width: 10,
-            ),
-            Text(
-              title,
-              style: TextStyle(
-                fontSize: 16,
-                fontFamily: 'Fellix-Bold',
-                fontWeight: FontWeight.bold,
+        child: isButtonActive
+            ? Container(
+                height: 14,
+                width: 14,
+                child: CircularProgressIndicator(
+                  color: Colors.white,
+                ),
+              )
+            : Text(
+                title,
+                style: TextStyle(
+                  fontSize: 16,
+                  fontFamily: 'Fellix-Bold',
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-            ),
-          ],
-        ),
-        shape: StadiumBorder(),
+        shape: isButtonActive ? CircleBorder() : StadiumBorder(),
         color: buttonColor,
         padding: EdgeInsets.symmetric(
           vertical: 18,

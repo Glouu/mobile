@@ -12,6 +12,7 @@ import 'package:gloou/shared/token/token.dart';
 import 'package:gloou/widgets/button_widget.dart';
 import 'package:gloou/widgets/ontap_text_widget.dart';
 import 'package:gloou/widgets/toast_widget.dart';
+import 'package:gloou/widgets/toggle_widget.dart';
 import 'package:intl/intl.dart';
 import 'package:keyboard_dismisser/keyboard_dismisser.dart';
 import 'package:sliding_sheet/sliding_sheet.dart';
@@ -35,6 +36,7 @@ class _DisplayFileState extends State<DisplayFile> {
 
   TextEditingController datePickedController = TextEditingController();
   TextEditingController timePickedController = TextEditingController();
+  SheetController _sheetController = SheetController();
 
   final FocusNode toggleNode = FocusNode();
   final FocusNode datePickedNode = FocusNode();
@@ -49,6 +51,7 @@ class _DisplayFileState extends State<DisplayFile> {
   late NormalmediaModel _normalmediaModel;
 
   bool isSubmit = false;
+  bool scheduleValue = false;
 
   late String status, message;
 
@@ -107,7 +110,7 @@ class _DisplayFileState extends State<DisplayFile> {
               child: ButtonWidget(
                 title: 'Next',
                 onClick: showSheet,
-                isButtonActive: false,
+                isButtonActive: isSubmit,
                 buttonColor: Theme.of(context).primaryColor,
               ),
             ),
@@ -120,7 +123,13 @@ class _DisplayFileState extends State<DisplayFile> {
   showSheet() => showSlidingBottomSheet(
         context,
         builder: (context) => SlidingSheetDialog(
-          snapSpec: SnapSpec(snappings: [0.7, 1]),
+          controller: _sheetController,
+          cornerRadius: 15,
+          avoidStatusBar: true,
+          snapSpec: SnapSpec(
+            snappings: [0.7, 1],
+            initialSnap: 0.7,
+          ),
           builder: buildSheet,
         ),
       );
@@ -156,28 +165,58 @@ class _DisplayFileState extends State<DisplayFile> {
                     SizedBox(
                       height: 10,
                     ),
-                    OnTapTextWidget(
-                      textInput: datePickedController,
-                      textNode: datePickedNode,
-                      labelTitle: 'Date',
-                      tapAction: () => datePicker(context),
-                      validationMsg: (value) {},
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          'Schedule File',
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        SizedBox(
+                          width: 100,
+                        ),
+                        Builder(
+                          builder: (context) => ToggleWidget(
+                            value: scheduleValue,
+                            onChanged: (value) => setState(() {
+                              this.scheduleValue = value;
+                              _sheetController.expand();
+                            }),
+                            sizeNumber: 1.5,
+                            toggleNode: toggleNode,
+                          ),
+                        )
+                      ],
                     ),
+                    scheduleValue
+                        ? OnTapTextWidget(
+                            textInput: datePickedController,
+                            textNode: datePickedNode,
+                            labelTitle: 'Date',
+                            tapAction: () => datePicker(context),
+                            validationMsg: (value) {},
+                          )
+                        : Container(),
+                    scheduleValue
+                        ? SizedBox(
+                            height: 10,
+                          )
+                        : Container(),
+                    scheduleValue
+                        ? OnTapTextWidget(
+                            textInput: timePickedController,
+                            textNode: timePickedNode,
+                            labelTitle: 'Time',
+                            tapAction: () => timePicker(context),
+                            validationMsg: (value) {},
+                          )
+                        : Container(),
                     SizedBox(
-                      height: 10,
-                    ),
-                    OnTapTextWidget(
-                      textInput: timePickedController,
-                      textNode: timePickedNode,
-                      labelTitle: 'Time',
-                      tapAction: () => timePicker(context),
-                      validationMsg: (value) {},
-                    ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    SizedBox(
-                      height: 20,
+                      height: 30,
                     ),
                     ButtonWidget(
                       title: 'Post',
@@ -243,13 +282,17 @@ class _DisplayFileState extends State<DisplayFile> {
       );
 
   void onSubmit() async {
+    setState(() {
+      isSubmit = true;
+      _sheetController.rebuild();
+    });
     var token = await tokenLogic.getToken();
     var isAllowComments = await secureStorage.readSecureData('isAllowComments');
     FocusScope.of(context).requestFocus(FocusNode());
 
     _normalmediaModel = NormalmediaModel(
       caption: '',
-      isText: true,
+      isText: false,
       allowComment: isAllowComments != null
           ? isAllowComments == 'true'
               ? true

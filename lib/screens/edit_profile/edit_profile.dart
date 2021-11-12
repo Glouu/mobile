@@ -339,6 +339,7 @@ class _EditProfileState extends State<EditProfile> {
       );
 
   void onSubmit() async {
+    isSubmit = true;
     FocusScope.of(context).requestFocus(FocusNode());
     final currentState = editProfileFormKey.currentState;
     final isValid;

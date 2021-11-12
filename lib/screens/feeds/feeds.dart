@@ -76,7 +76,7 @@ class _FeedsState extends State<Feeds> {
 
   late List stories;
 
-  late List posts;
+  List posts = [];
 
   late List comments = [];
 
@@ -479,7 +479,7 @@ class _FeedsState extends State<Feeds> {
                 ? Center(
                     child: CircularProgressIndicator(),
                   )
-                : isPostEmpty
+                : isPostEmpty || posts.length == 0
                     ? Center(
                         child: Text('You don\'t have any post'),
                       )

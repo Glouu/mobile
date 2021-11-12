@@ -5,6 +5,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:gloou/screens/edit_profile/edit_profile.dart';
+import 'package:gloou/screens/group/listGroup/listGroup.dart';
 import 'package:gloou/screens/log_in/log_in.dart';
 import 'package:gloou/screens/setttings/settings.dart';
 import 'package:gloou/shared/api_environment/api_utils.dart';
@@ -139,7 +140,6 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
               onClick: () {},
               follow: true,
               onToggleChanged: (value) {
-                print(value);
                 setState(() {
                   this.value = value;
                 });
@@ -324,13 +324,15 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
         print('Pod Cast');
         break;
       case 2:
-        print('Groups');
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => ListGroup()),
+        );
         break;
       // case 3:
       //   print('Bookmarks');
       //   break;
       case 4:
-        print('Settings');
         Navigator.push(
           context,
           MaterialPageRoute(

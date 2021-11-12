@@ -38,48 +38,56 @@ class _ReadPdfState extends State<ReadPdf> {
           icon: Icon(Icons.close),
         ),
         actions: [
-          Align(
-            alignment: Alignment.center,
-            child: Container(
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(15),
-                  boxShadow: [
-                    BoxShadow(
-                      spreadRadius: 6,
-                      color: Colors.orange,
-                    )
-                  ]),
-              child: Text(
-                'PDF',
-                style: TextStyle(
-                  color: Colors.black,
-                  fontWeight: FontWeight.bold,
+          Padding(
+            padding: const EdgeInsets.only(right: 15.0),
+            child: Align(
+              alignment: Alignment.center,
+              child: Container(
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(15),
+                    boxShadow: [
+                      BoxShadow(
+                        spreadRadius: 6,
+                        color: Colors.orange,
+                      )
+                    ]),
+                child: Text(
+                  'PDF',
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ),
           )
         ],
       ),
-      body: ListView(
-        shrinkWrap: true,
-        primary: false,
-        padding: EdgeInsets.only(left: 15, right: 15),
-        children: [
-          SingleChildScrollView(
-            child: Container(
-              height: (size.height) / 1,
-              width: size.width,
-              child: PDFView(
-                enableSwipe: true,
-                swipeHorizontal: true,
-                autoSpacing: false,
-                pageFling: false,
-                filePath: widget.filePath,
-              ),
-            ),
-          )
-        ],
+      body: Container(
+        child: PDFView(
+          filePath: widget.filePath,
+        ),
       ),
+      // body: ListView(
+      //   shrinkWrap: true,
+      //   primary: false,
+      //   padding: EdgeInsets.only(left: 15, right: 15),
+      //   children: [
+      //     SingleChildScrollView(
+      //       child: Container(
+      //         height: (size.height) / 1,
+      //         width: size.width,
+      //         child: PDFView(
+      //           enableSwipe: true,
+      //           swipeHorizontal: true,
+      //           autoSpacing: false,
+      //           pageFling: false,
+      //           filePath: widget.filePath,
+      //         ),
+      //       ),
+      //     )
+      //   ],
+      // ),
     );
   }
 }
