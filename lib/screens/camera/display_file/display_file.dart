@@ -387,7 +387,7 @@ class _DisplayFileState extends State<DisplayFile> {
       HttpHeaders.authorizationHeader: 'Bearer $token'
     });
 
-    var fileResponse = fileRequest.send();
+    var fileResponse = await fileRequest.send();
 
     return fileResponse;
   }

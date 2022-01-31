@@ -11,6 +11,8 @@ buildscript {
     }
 }
 
+ext.flutterFFmpegPackage = "full"
+
 allprojects {
     repositories {
         google()

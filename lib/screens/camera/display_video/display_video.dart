@@ -21,6 +21,7 @@ import 'package:keyboard_dismisser/keyboard_dismisser.dart';
 import 'package:sliding_sheet/sliding_sheet.dart';
 import 'package:video_player/video_player.dart';
 import 'package:http/http.dart' as http;
+import 'package:video_trimmer/video_trimmer.dart';
 
 class DisplayVideo extends StatefulWidget {
   final String videoPath;
@@ -71,10 +72,48 @@ class _DisplayVideoState extends State<DisplayVideo> {
 
   late List followedUsers;
 
+  final Trimmer _trimmer = Trimmer();
+
+  double _startValue = 0.0;
+  double _endValue = 0.0;
+
+  bool _isPlaying = false;
+  bool _progressVisibility = false;
+
+  void _loadVideo() {
+    _trimmer.loadVideo(videoFile: File(widget.videoPath));
+    setState(() {
+      _trimmer.videoPlayerController!.pause();
+      _trimmer.videoPlayerController!.setVolume(0.0);
+    });
+  }
+
+  Future<String> _savedVideo() async {
+    String _result = '';
+
+    await _trimmer
+        .saveTrimmedVideo(
+      startValue: _startValue,
+      endValue: _endValue,
+    )
+        .then((value) {
+      setState(() {
+        _result = value;
+      });
+    });
+
+    if (_result != '') {
+      return _result;
+    } else {
+      return _result;
+    }
+  }
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    _loadVideo();
     toast.init(context);
 
     captionController.addListener(() {
@@ -88,12 +127,12 @@ class _DisplayVideoState extends State<DisplayVideo> {
     timePickedController.addListener(() {
       setState(() {});
     });
-    _videoPlayerController = VideoPlayerController.file(File(widget.videoPath))
-      ..initialize().then((_) {
-        setState(() {
-          _videoPlayerController.play();
-        });
-      });
+    // _videoPlayerController = VideoPlayerController.file(File(widget.videoPath))
+    //   ..initialize().then((_) {
+    //     setState(() {
+    //       _videoPlayerController.play();
+    //     });
+    //   });
   }
 
   @override
@@ -107,74 +146,121 @@ class _DisplayVideoState extends State<DisplayVideo> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.black,
-        leading: IconButton(
-          onPressed: () {
-            setState(() {
-              Navigator.pop(context);
-            });
-          },
-          icon: Icon(Icons.close),
-        ),
-      ),
-      body: Container(
-        color: Colors.black,
-        height: MediaQuery.of(context).size.height,
-        width: MediaQuery.of(context).size.width,
-        child: Container(
-          height: MediaQuery.of(context).size.height,
-          width: MediaQuery.of(context).size.width,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(15),
+    return WillPopScope(
+      onWillPop: () async {
+        if (Navigator.of(context).userGestureInProgress) {
+          return false;
+        } else {
+          return true;
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.black,
+          leading: IconButton(
+            onPressed: () {
+              setState(() {
+                Navigator.pop(context);
+              });
+            },
+            icon: Icon(Icons.close),
           ),
-          child: _videoPlayerController.value.isInitialized
-              ? GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      _videoPlayerController.value.isPlaying
-                          ? _videoPlayerController.pause()
-                          : _videoPlayerController.play();
-                    });
-                  },
-                  child: AspectRatio(
-                    aspectRatio: _videoPlayerController.value.aspectRatio,
-                    child: VideoPlayer(_videoPlayerController),
+        ),
+        body: Builder(
+          builder: (context) => Container(
+            child: Stack(
+              children: [
+                Positioned(
+                  width: MediaQuery.of(context).size.width,
+                  child: GestureDetector(
+                    onTap: () async {
+                      bool playbackState = await _trimmer.videPlaybackControl(
+                        startValue: _startValue,
+                        endValue: _endValue,
+                      );
+                      setState(() {
+                        _isPlaying = playbackState;
+                      });
+                    },
+                    child: VideoViewer(
+                      trimmer: _trimmer,
+                    ),
                   ),
-                )
-              : Center(
-                  child: CircularProgressIndicator(),
                 ),
-        ),
-      ),
-      // bottomSheet: Container(),
-      bottomNavigationBar: Stack(
-        children: [
-          Container(
-            height: 70,
-            color: Colors.black,
-          ),
-          Positioned(
-            right: 20.0,
-            top: 10,
-            child: Container(
-              child: ButtonWidget(
-                title: widget.platformName == 'story' ? 'Post' : 'Next',
-                onClick: () {
-                  setState(() {
-                    _videoPlayerController.pause();
-                  });
-                  widget.platformName == 'story'
-                      ? onSubmitStoryVideo()
-                      : showSheet();
-                },
-                isButtonActive: isSubmit,
-                buttonColor: Theme.of(context).primaryColor,
-              ),
+                Positioned(
+                  width: MediaQuery.of(context).size.width,
+                  bottom: 0.0,
+                  child: Center(
+                    child: TrimEditor(
+                      trimmer: _trimmer,
+                      viewerHeight: 50.0,
+                      viewerWidth: MediaQuery.of(context).size.width,
+                      maxVideoLength: const Duration(seconds: 30),
+                      onChangeStart: (value) {
+                        _startValue = value;
+                      },
+                      onChangeEnd: (value) {
+                        _endValue = value;
+                      },
+                      onChangePlaybackState: (value) {
+                        setState(() {
+                          _isPlaying = value;
+                        });
+                      },
+                    ),
+                  ),
+                ),
+              ],
             ),
-          )
-        ],
+          ),
+        ),
+        // ? GestureDetector(
+        //     onTap: () {
+        //       setState(() {
+        //         _videoPlayerController.value.isPlaying
+        //             ? _videoPlayerController.pause()
+        //             : _videoPlayerController.play();
+        //       });
+        //     },
+        //     child: AspectRatio(
+        //       aspectRatio: _videoPlayerController.value.aspectRatio,
+        //       child: VideoPlayer(_videoPlayerController),
+        //     ),
+        //   ),
+        // bottomSheet: Container(),
+        bottomNavigationBar: Stack(
+          children: [
+            Container(
+              height: 70,
+              color: Colors.black,
+            ),
+            Positioned(
+              right: 20.0,
+              top: 10,
+              child: Container(
+                child: ButtonWidget(
+                  title: widget.platformName == 'story' ? 'Post' : 'Next',
+                  onClick: () {
+                    setState(() {
+                      _trimmer.videoPlayerController!.pause();
+                      // _videoPlayerController.pause();
+                    });
+                    widget.platformName == 'story'
+                        ? _savedVideo().then((value) {
+                            if (value != '') {
+                              debugPrint('OUTPUT PATH: $value');
+                              onSubmitStoryVideo(value);
+                            }
+                          })
+                        : showSheet();
+                  },
+                  isButtonActive: isSubmit,
+                  buttonColor: Theme.of(context).primaryColor,
+                ),
+              ),
+            )
+          ],
+        ),
       ),
     );
   }
@@ -269,9 +355,9 @@ class _DisplayVideoState extends State<DisplayVideo> {
                               findSuggestions: (String query) {
                                 if (query.isNotEmpty) {
                                   var lowerCaseQuery = query.toLowerCase();
-                                  // return followedUsers.where((userInfo) {
-                                  //   return userInfo.name
-                                  // });
+                                  return followedUsers.where((userInfo) {
+                                    return userInfo['name'];
+                                  }).toList(growable: false);
                                 }
 
                                 return followedUsers;
@@ -461,7 +547,11 @@ class _DisplayVideoState extends State<DisplayVideo> {
                   ),
                   ButtonWidget(
                     title: 'Post',
-                    onClick: onSubmitVideo,
+                    onClick: () => _savedVideo().then((value) {
+                      if (value != '') {
+                        onSubmitVideo(value);
+                      }
+                    }),
                     isButtonActive: isSubmit,
                     buttonColor: Theme.of(context).primaryColor,
                   ),
@@ -521,7 +611,7 @@ class _DisplayVideoState extends State<DisplayVideo> {
         gravity: ToastGravity.TOP,
       );
 
-  void onSubmitVideo() async {
+  void onSubmitVideo(String trimPath) async {
     isSubmit = true;
     _sheetController.rebuild();
     var token = await tokenLogic.getToken();
@@ -576,8 +666,8 @@ class _DisplayVideoState extends State<DisplayVideo> {
       var captionJsonResponse = jsonDecode(captionResponse.body);
       var captionId = captionJsonResponse['data']['id'];
 
-      final compressVideo = await VideoCompressLogic.compressVideo(
-          File(widget.videoPath), context);
+      final compressVideo =
+          await VideoCompressLogic.compressVideo(File(trimPath), context);
       if (compressVideo != null) {
         var fileResponse = await addPostVideo(
           captionId,
@@ -617,7 +707,7 @@ class _DisplayVideoState extends State<DisplayVideo> {
     }
   }
 
-  void onSubmitStoryVideo() async {
+  void onSubmitStoryVideo(String trimPath) async {
     isSubmit = true;
     var token = await tokenLogic.getToken();
     var isAllowComments = await secureStorage.readSecureData('isAllowComments');
@@ -642,8 +732,8 @@ class _DisplayVideoState extends State<DisplayVideo> {
       var captionJsonResponse = jsonDecode(captionResponse.body);
       var captionId = captionJsonResponse['data']['id'];
 
-      final compressVideo = await VideoCompressLogic.compressVideo(
-          File(widget.videoPath), context);
+      final compressVideo =
+          await VideoCompressLogic.compressVideo(File(trimPath), context);
 
       if (compressVideo != null) {
         var fileResponse = await addStoryVideo(
@@ -685,7 +775,7 @@ class _DisplayVideoState extends State<DisplayVideo> {
     String captionId,
     String videoPath,
   ) async {
-    var token = await tokenLogic.getToken();
+    var token =WidgetsFlutterBinding.ensureInitialized(); await tokenLogic.getToken();
     var fileUrl = Uri.parse(ApiUtils.API_URL + '/Post/SaveFile/$captionId');
 
     var fileRequest = http.MultipartRequest(
@@ -700,7 +790,7 @@ class _DisplayVideoState extends State<DisplayVideo> {
       HttpHeaders.authorizationHeader: 'Bearer $token'
     });
 
-    var fileResponse = fileRequest.send();
+    var fileResponse = await fileRequest.send();
 
     return fileResponse;
   }
@@ -724,7 +814,7 @@ class _DisplayVideoState extends State<DisplayVideo> {
       HttpHeaders.authorizationHeader: 'Bearer $token'
     });
 
-    var fileResponse = fileRequest.send();
+    var fileResponse = await fileRequest.send();
 
     return fileResponse;
   }

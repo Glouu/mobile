@@ -179,8 +179,6 @@ class _InterestState extends State<Interest> {
                                                 : _interestModel.data
                                                     .removeWhere(
                                                         (interestFetch) {
-                                                    print(interestFetch
-                                                        .interestID);
                                                     return interestFetch
                                                             .interestID ==
                                                         interestData[i]

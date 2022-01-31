@@ -221,7 +221,6 @@ class _LogInState extends State<LogIn> {
         body: jsonEncode(loginModel.toJson()),
         headers: Header.noBearerHeader,
       );
-      // print(response.body);
 
       if (response.statusCode == 200) {
         isSubmit = false;
@@ -269,7 +268,6 @@ class _LogInState extends State<LogIn> {
         status = 'error';
         message = jsonError['error'];
         displayToast();
-        print(jsonError);
       }
     }
   }

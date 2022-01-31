@@ -1,10 +1,23 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:gloou/screens/splash/splash.dart';
+import 'package:gloou/shared/api_environment/file_uploader.dart';
 import 'package:gloou/shared/colors/colors.dart';
 import 'package:gloou/shared/utilities/l10n/l10n.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
+void backGroundHandler() {
+  WidgetsFlutterBinding.ensureInitialized();
+  final notifications = FlutterLocalNotificationsPlugin();
+
+  if (Platform.isAndroid) {
+    // BackgroundUploader.flutterUploader.progress.listen((event) {notifications.show(id, title, body, notificationDetails)});
+  }
+}
 
 void main() {
   runApp(MyApp());

@@ -93,7 +93,6 @@ class _CardWidgetState extends State<CardWidget> {
 
   @override
   Widget build(BuildContext context) {
-    print('this is card data: ${widget.mediaType.isNotEmpty}');
     return widget.mediaType.isNotEmpty
         ? Stack(
             fit: StackFit.expand,

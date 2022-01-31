@@ -185,7 +185,7 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
         var result = jsonDecode(response.body);
         return result;
       } else {
-        print('this is count error: ${jsonDecode(response.body)}');
+        // print('this is count error: ${jsonDecode(response.body)}');
       }
     } else {
       Navigator.pushAndRemoveUntil(
@@ -214,8 +214,8 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
         var result = jsonDecode(response.body);
         return result;
       } else {
-        print(
-            'this is count error: ${jsonDecode(response.body)} and the url is $url');
+        // print(
+        //     'this is count error: ${jsonDecode(response.body)} and the url is $url');
       }
     } else {
       Navigator.pushAndRemoveUntil(

@@ -4,7 +4,11 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bounce/flutter_bounce.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:gloou/screens/group/addGroup/addGroup.dart';
+import 'package:gloou/screens/group/editGroup/editGroup.dart';
+import 'package:gloou/screens/group/groupAddUsers/groupAddUsers.dart';
+import 'package:gloou/screens/group/manageMember/manageMember.dart';
 import 'package:gloou/screens/log_in/log_in.dart';
 import 'package:gloou/shared/api_environment/api_utils.dart';
 import 'package:gloou/shared/colors/colors.dart';
@@ -56,10 +60,59 @@ class _ListGroupState extends State<ListGroup> {
     }
   }
 
+  _onDeleteGroup(String id) async {
+    var token = await tokenLogic.getToken();
+    if (token != null) {
+      var url = Uri.parse(ApiUtils.API_URL + '/Group/GetByUserID');
+      var httpClient = http.Client();
+      var response = await httpClient.get(
+        url,
+        headers: {
+          HttpHeaders.contentTypeHeader: 'application/json',
+          HttpHeaders.authorizationHeader: 'Bearer $token'
+        },
+      );
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      } else {
+        print(jsonDecode(response.body));
+        // var jsonError = jsonDecode(response.body);
+      }
+    }
+  }
+
+  List<PopItem> popList = [
+    PopItem(1, 'Invite People', ''),
+    PopItem(2, 'Edit group details', 'assets/images/edit_group.svg'),
+    PopItem(3, 'Manage members', 'assets/images/manage_mem.svg'),
+    PopItem(4, 'Delete group', 'assets/images/delete_group.svg'),
+  ];
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    fetchUserGroups().then((userGroup) {
+      setState(() {
+        if (userGroup != null) {
+          var groupData = userGroup['data'];
+          if (groupData.length > 0) {
+            groups = groupData;
+            isCircular = false;
+          } else {
+            isCircular = false;
+          }
+        } else {
+          isCircular = false;
+        }
+      });
+    });
+  }
+
+  @override
+  void didChangeDependencies() {
+    // TODO: implement didChangeDependencies
+    super.didChangeDependencies();
     fetchUserGroups().then((userGroup) {
       setState(() {
         if (userGroup != null) {
@@ -160,13 +213,56 @@ class _ListGroupState extends State<ListGroup> {
                                               fontSize: 18,
                                             ),
                                           ),
-                                          Bounce(
-                                            child:
-                                                Icon(Icons.more_horiz_rounded),
-                                            duration:
-                                                Duration(milliseconds: 500),
-                                            onPressed: () {},
-                                          )
+                                          PopupMenuButton(
+                                            onSelected: (value) {
+                                              onSelected(
+                                                  value.toString(), groups[i]);
+                                            },
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(15),
+                                            ),
+                                            elevation: 10,
+                                            icon: Icon(
+                                              Icons.more_horiz_rounded,
+                                            ),
+                                            itemBuilder: (context) {
+                                              return popList
+                                                  .map((PopItem choice) {
+                                                return PopupMenuItem(
+                                                  value: choice.value,
+                                                  child: Row(
+                                                    children: [
+                                                      choice.value == 1
+                                                          ? Icon(Icons
+                                                              .group_outlined)
+                                                          : SvgPicture.asset(
+                                                              choice.iconPath,
+                                                              color: choice
+                                                                          .value ==
+                                                                      4
+                                                                  ? Colors.red
+                                                                  : Colors
+                                                                      .black,
+                                                            ),
+                                                      SizedBox(
+                                                        width: 10,
+                                                      ),
+                                                      Text(
+                                                        choice.name,
+                                                        style: TextStyle(
+                                                          color: choice.value ==
+                                                                  4
+                                                              ? Colors.red
+                                                              : Colors.black,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                );
+                                              }).toList();
+                                            },
+                                          ),
                                         ],
                                       ),
                                       SizedBox(
@@ -194,27 +290,27 @@ class _ListGroupState extends State<ListGroup> {
                                               child: Container(
                                                 padding: EdgeInsets.all(2),
                                                 color: Colors.white,
-                                                child: CircleAvatar(
-                                                  child: j == 4
-                                                      ? Text(
+                                                child: j == 4
+                                                    ? CircleAvatar(
+                                                        backgroundColor:
+                                                            Colors.red,
+                                                        child: Text(
                                                           '+ ${groups[i]['members'].length - 5}',
                                                           style: TextStyle(
                                                               fontWeight:
                                                                   FontWeight
                                                                       .bold),
-                                                        )
-                                                      : CircleAvatar(
-                                                          backgroundImage:
-                                                              MemoryImage(
-                                                            convertImage
-                                                                .formatBase64(groups[
-                                                                            i][
-                                                                        'members']
-                                                                    [
-                                                                    j]['image']),
-                                                          ),
                                                         ),
-                                                ),
+                                                      )
+                                                    : CircleAvatar(
+                                                        backgroundImage:
+                                                            MemoryImage(
+                                                          convertImage.formatBase64(
+                                                              groups[i]['members']
+                                                                      [j][
+                                                                  'userImage']),
+                                                        ),
+                                                      ),
                                               ),
                                             ),
                                           );
@@ -267,4 +363,58 @@ class _ListGroupState extends State<ListGroup> {
       ),
     );
   }
+
+  void onSelected(String value, Map<String, dynamic> group) {
+    switch (value) {
+      case '1':
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => GroupAddUsers(groupId: group['id']),
+          ),
+        );
+        break;
+      case '2':
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => EditGroup(
+              groupId: group['id'],
+              image: group['image'],
+              name: group['name'],
+              description: group['description'],
+            ),
+          ),
+        );
+        break;
+      case '3':
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ManageMember(
+              groupId: group['id'],
+            ),
+          ),
+        );
+        break;
+      case '4':
+        _onDeleteGroup(group['id']).then((data) {
+          groups.removeWhere((id) {
+            return id['id'] == group['id'];
+          });
+        });
+        break;
+    }
+  }
+}
+
+class PopItem {
+  int value;
+  String name;
+  String iconPath;
+  PopItem(
+    this.value,
+    this.name,
+    this.iconPath,
+  );
 }

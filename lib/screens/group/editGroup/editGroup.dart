@@ -4,9 +4,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:gloou/screens/group/groupAddUsers/groupAddUsers.dart';
 import 'package:gloou/shared/api_environment/api_utils.dart';
-import 'package:gloou/shared/models/groupModel/addgroupModel/addgroupModel.dart';
+import 'package:gloou/shared/models/groupModel/editgroupModel/editgroupModel.dart';
 import 'package:gloou/shared/token/token.dart';
 import 'package:gloou/shared/utilities/convert_image.dart';
 import 'package:gloou/widgets/button_widget.dart';
@@ -16,15 +15,25 @@ import 'package:image_picker/image_picker.dart';
 import 'package:keyboard_dismisser/keyboard_dismisser.dart';
 import 'package:http/http.dart' as http;
 
-class AddGroup extends StatefulWidget {
-  const AddGroup({Key? key}) : super(key: key);
+class EditGroup extends StatefulWidget {
+  final String groupId;
+  final String image;
+  final String name;
+  final String description;
+  const EditGroup({
+    Key? key,
+    required this.groupId,
+    required this.image,
+    required this.name,
+    required this.description,
+  }) : super(key: key);
 
   @override
-  _AddGroupState createState() => _AddGroupState();
+  _EditGroupState createState() => _EditGroupState();
 }
 
-class _AddGroupState extends State<AddGroup> {
-  final createGroupFormKey = GlobalKey<FormState>();
+class _EditGroupState extends State<EditGroup> {
+  final editGroupFormKey = GlobalKey<FormState>();
 
   String image = '';
   TextEditingController imageController = TextEditingController();
@@ -78,9 +87,15 @@ class _AddGroupState extends State<AddGroup> {
 
   final toast = FToast();
 
-  late AddgroupModel _addgroupModel;
+  late EditgroupModel _editgroupModel;
   final TokenLogic tokenLogic = TokenLogic();
   final ConvertImage convertImage = ConvertImage();
+
+  void init() async {
+    imageController.text = widget.image;
+    nameController.text = widget.name;
+    descriptionController.text = widget.description;
+  }
 
   @override
   void initState() {
@@ -96,6 +111,8 @@ class _AddGroupState extends State<AddGroup> {
     descriptionController.addListener(() {
       setState(() {});
     });
+
+    init();
   }
 
   @override
@@ -117,7 +134,7 @@ class _AddGroupState extends State<AddGroup> {
         elevation: 0.0,
         iconTheme: IconThemeData(color: Colors.black),
         title: Text(
-          'Create a Group',
+          'Edit Group',
           style: TextStyle(
             color: Colors.black,
             fontWeight: FontWeight.bold,
@@ -135,7 +152,7 @@ class _AddGroupState extends State<AddGroup> {
         child: SafeArea(
           child: Center(
             child: Form(
-              key: createGroupFormKey,
+              key: editGroupFormKey,
               child: ListView(
                 padding: EdgeInsets.all(20),
                 physics: BouncingScrollPhysics(),
@@ -161,31 +178,46 @@ class _AddGroupState extends State<AddGroup> {
                                     ),
                                   ),
                                 )
-                              : ClipOval(
-                                  child: Material(
-                                    child: Container(
-                                      width: 130,
-                                      height: 130,
-                                      padding: EdgeInsets.all(5),
-                                      color: Colors.white,
-                                      child: ClipOval(
+                              : widget.image != ''
+                                  ? Container(
+                                      width: 100,
+                                      height: 100,
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        image: DecorationImage(
+                                          image: MemoryImage(
+                                            convertImage
+                                                .formatBase64(widget.image),
+                                          ),
+                                          fit: BoxFit.fill,
+                                        ),
+                                      ),
+                                    )
+                                  : ClipOval(
+                                      child: Material(
                                         child: Container(
-                                          width: 96,
-                                          height: 96,
-                                          padding: EdgeInsets.all(3),
-                                          color: Color(0xFFc4c5ed),
+                                          width: 130,
+                                          height: 130,
+                                          padding: EdgeInsets.all(5),
+                                          color: Colors.white,
                                           child: ClipOval(
                                             child: Container(
                                               width: 96,
                                               height: 96,
-                                              color: Color(0xFFECEFFD),
+                                              padding: EdgeInsets.all(3),
+                                              color: Color(0xFFc4c5ed),
+                                              child: ClipOval(
+                                                child: Container(
+                                                  width: 96,
+                                                  height: 96,
+                                                  color: Color(0xFFECEFFD),
+                                                ),
+                                              ),
                                             ),
                                           ),
                                         ),
                                       ),
                                     ),
-                                  ),
-                                ),
                           onTap: showBottomSheet,
                         ),
                         Positioned(
@@ -289,56 +321,48 @@ class _AddGroupState extends State<AddGroup> {
       );
 
   void onSubmit() async {
+    isSubmit = true;
     var token = await tokenLogic.getToken();
     FocusScope.of(context).requestFocus(FocusNode());
-    final currentState = createGroupFormKey.currentState;
-    final bool isValid;
+    final currentState = editGroupFormKey.currentState;
+    final isValid;
     if (currentState != null) {
       isValid = currentState.validate();
     } else {
       isValid = false;
     }
 
-    if (isValid) {
-      isSubmit = true;
-      _addgroupModel = AddgroupModel(
-        description: descriptionController.text,
-        image: imageController.text,
-        name: nameController.text,
-      );
+    _editgroupModel = EditgroupModel(
+      id: widget.groupId,
+      description: descriptionController.text,
+      image: imageController.text,
+      name: nameController.text,
+    );
 
-      var url = Uri.parse(ApiUtils.API_URL + '/Group/Create');
-      var httpClient = http.Client();
+    var url = Uri.parse(ApiUtils.API_URL + '/Group/Update');
+    var httpClient = http.Client();
 
-      var response = await httpClient.post(
-        url,
-        body: jsonEncode(_addgroupModel.toJson()),
-        headers: {
-          HttpHeaders.contentTypeHeader: 'application/json',
-          HttpHeaders.authorizationHeader: 'Bearer $token'
-        },
-      );
+    var response = await httpClient.put(
+      url,
+      body: jsonEncode(_editgroupModel.toJson()),
+      headers: {
+        HttpHeaders.contentTypeHeader: 'application/json',
+        HttpHeaders.authorizationHeader: 'Bearer $token'
+      },
+    );
 
-      if (response.statusCode == 200) {
-        var jsonResponse = jsonDecode(response.body);
-        setState(() {
-          Navigator.pop(context);
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => GroupAddUsers(
-                      groupId: jsonResponse['data']['id'],
-                    )),
-          );
-        });
-      } else {
-        var jsonError = jsonDecode(response.body);
-        isSubmit = false;
-        status = 'error';
-        message = jsonError['error'];
-        displayToast();
-        isSubmit = false;
-      }
+    if (response.statusCode == 200) {
+      var jsonResponse = jsonDecode(response.body);
+
+      setState(() {
+        Navigator.pop(context);
+      });
+    } else {
+      var jsonError = jsonDecode(response.body);
+      isSubmit = false;
+      status = 'error';
+      message = jsonError['error'];
+      displayToast();
     }
   }
 }

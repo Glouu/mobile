@@ -531,7 +531,7 @@ class _DisplayPictureState extends State<DisplayPicture> {
       HttpHeaders.authorizationHeader: 'Bearer $token'
     });
 
-    var fileResponse = fileRequest.send();
+    var fileResponse = await fileRequest.send();
 
     return fileResponse;
   }
@@ -555,7 +555,7 @@ class _DisplayPictureState extends State<DisplayPicture> {
       HttpHeaders.authorizationHeader: 'Bearer $token'
     });
 
-    var fileResponse = fileRequest.send();
+    var fileResponse = await fileRequest.send();
 
     return fileResponse;
   }

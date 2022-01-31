@@ -58,6 +58,8 @@ class _FeedsState extends State<Feeds> {
   bool isStoryCircular = true;
   bool isImage = false;
   bool isSubmit = false;
+  bool isPlay = true;
+  bool isVolume = false;
   late bool isPostEmpty;
   late bool isStoryEmpty;
 
@@ -77,6 +79,27 @@ class _FeedsState extends State<Feeds> {
   late List stories;
 
   List posts = [];
+
+  List<PopItem> popList = [
+    PopItem(
+      1,
+      'Follow',
+      Icons.person_add_alt_1_outlined,
+      Colors.black,
+    ),
+    PopItem(
+      2,
+      'Unfollow',
+      Icons.person_remove_alt_1_outlined,
+      Colors.red,
+    ),
+    PopItem(
+      3,
+      'Report',
+      Icons.thumb_down_off_alt_rounded,
+      Colors.red,
+    ),
+  ];
 
   late List comments = [];
 
@@ -1139,13 +1162,16 @@ class _FeedsState extends State<Feeds> {
                                                                     .length,
                                                                 (j) {
                                                               return FeedVideoWidget(
-                                                                  fileName: posts[
-                                                                              i]
-                                                                          [
-                                                                          'files'][j]
-                                                                      [
-                                                                      'fileName'],
-                                                                  token: token);
+                                                                fileName: posts[
+                                                                            i][
+                                                                        'files'][j]
+                                                                    [
+                                                                    'fileName'],
+                                                                token: token,
+                                                                isPlay: isPlay,
+                                                                isVolume:
+                                                                    isVolume,
+                                                              );
                                                             }),
                                                           ),
                                                           Container(
@@ -1185,21 +1211,100 @@ class _FeedsState extends State<Feeds> {
                                                               ),
                                                               child: Stack(
                                                                 children: [
-                                                                  Positioned(
-                                                                    right: 10,
-                                                                    child:
-                                                                        IconButton(
-                                                                      onPressed:
-                                                                          () {},
-                                                                      icon:
-                                                                          Icon(
-                                                                        Icons
-                                                                            .more_horiz_rounded,
-                                                                        color: Colors
-                                                                            .white,
-                                                                      ),
-                                                                    ),
-                                                                  ),
+                                                                  posts[i]['userId'] ==
+                                                                          userInfo[
+                                                                              'id']
+                                                                      ? Row(
+                                                                          children: [
+                                                                            Bounce(
+                                                                              child: Icon(
+                                                                                isPlay ? Icons.pause_circle_filled_rounded : Icons.play_circle_fill_rounded,
+                                                                                color: Colors.white,
+                                                                              ),
+                                                                              duration: Duration(milliseconds: 500),
+                                                                              onPressed: () {
+                                                                                setState(
+                                                                                  () {
+                                                                                    isPlay = !isPlay;
+                                                                                    print('This play is: $isPlay');
+                                                                                  },
+                                                                                );
+                                                                              },
+                                                                            ),
+                                                                          ],
+                                                                        )
+                                                                      : Row(
+                                                                          mainAxisAlignment:
+                                                                              MainAxisAlignment.spaceBetween,
+                                                                          children: [
+                                                                            Bounce(
+                                                                              child: Icon(
+                                                                                isPlay ? Icons.pause_circle_filled_rounded : Icons.play_circle_fill_rounded,
+                                                                                color: Colors.white,
+                                                                              ),
+                                                                              duration: Duration(milliseconds: 500),
+                                                                              onPressed: () {
+                                                                                setState(
+                                                                                  () {
+                                                                                    isPlay = !isPlay;
+                                                                                    print('This play is: $isPlay');
+                                                                                  },
+                                                                                );
+                                                                              },
+                                                                            ),
+                                                                            PopupMenuButton(
+                                                                              onSelected: (value) {
+                                                                                onSelected(
+                                                                                  value.toString(),
+                                                                                  posts[i]['userId'],
+                                                                                );
+                                                                              },
+                                                                              shape: RoundedRectangleBorder(
+                                                                                borderRadius: BorderRadius.circular(15),
+                                                                              ),
+                                                                              elevation: 10,
+                                                                              icon: Icon(
+                                                                                Icons.more_horiz_rounded,
+                                                                                color: Colors.white,
+                                                                              ),
+                                                                              itemBuilder: (context) {
+                                                                                return popList.map((PopItem choice) {
+                                                                                  return PopupMenuItem(
+                                                                                    value: choice.value,
+                                                                                    child: Row(
+                                                                                      children: [
+                                                                                        Icon(
+                                                                                          choice.icon,
+                                                                                          color: choice.color,
+                                                                                        ),
+                                                                                        SizedBox(
+                                                                                          width: 10,
+                                                                                        ),
+                                                                                        Text(
+                                                                                          choice.name,
+                                                                                          style: TextStyle(
+                                                                                            color: choice.color,
+                                                                                          ),
+                                                                                        ),
+                                                                                      ],
+                                                                                    ),
+                                                                                  );
+                                                                                }).toList();
+                                                                              },
+                                                                            ),
+                                                                            // IconButton(
+                                                                            //   onPressed:
+                                                                            //       () {},
+                                                                            //   icon:
+                                                                            //       Icon(
+                                                                            //     Icons
+                                                                            //         .more_horiz_rounded,
+                                                                            //     color:
+                                                                            //         Colors.white,
+                                                                            //   ),
+                                                                            // ),
+                                                                          ],
+                                                                        ),
                                                                   Column(
                                                                     crossAxisAlignment:
                                                                         CrossAxisAlignment
@@ -1420,7 +1525,6 @@ class _FeedsState extends State<Feeds> {
                   : SingleChildScrollView(
                       child: Column(
                         children: List.generate(comments.length, (i) {
-                          // print(comments[i]['image']);
                           return comments.length > 0
                               ? Column(
                                   children: [
@@ -1726,7 +1830,6 @@ class _FeedsState extends State<Feeds> {
       commentId: commentId,
       postId: postId,
     );
-    print(_commentlikeModel.commentId);
 
     var url = isCreate
         ? Uri.parse(ApiUtils.API_URL + '/Post/Comment/Like')
@@ -1778,7 +1881,6 @@ class _FeedsState extends State<Feeds> {
     var shareUrl = isCreate
         ? Uri.parse(ApiUtils.API_URL + '/Post/Repost/Create')
         : Uri.parse(ApiUtils.API_URL + '/Post/Repost/Remove');
-    print(shareUrl);
     var httpClient = http.Client();
     var shareResponse = isCreate
         ? await httpClient.post(
@@ -1855,4 +1957,30 @@ class _FeedsState extends State<Feeds> {
       });
     }
   }
+
+  void onSelected(String value, String userId) {
+    switch (value) {
+      case '1':
+        break;
+      case '2':
+        break;
+      case '3':
+        break;
+      case '4':
+        break;
+    }
+  }
+}
+
+class PopItem {
+  int value;
+  String name;
+  IconData icon;
+  Color color;
+  PopItem(
+    this.value,
+    this.name,
+    this.icon,
+    this.color,
+  );
 }

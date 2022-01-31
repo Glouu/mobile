@@ -7,10 +7,14 @@ import 'package:video_player/video_player.dart';
 class FeedVideoWidget extends StatefulWidget {
   final String fileName;
   final String token;
+  final bool isPlay;
+  final bool isVolume;
   const FeedVideoWidget({
     Key? key,
     required this.fileName,
     required this.token,
+    required this.isPlay,
+    required this.isVolume,
   }) : super(key: key);
 
   @override
@@ -35,7 +39,12 @@ class _FeedVideoWidgetState extends State<FeedVideoWidget> {
       ..setLooping(true)
       ..initialize().then((_) {
         setState(() {
-          _videoPlayerController.play();
+          widget.isVolume
+              ? _videoPlayerController.setVolume(1.0)
+              : _videoPlayerController.setVolume(0.0);
+          widget.isPlay
+              ? _videoPlayerController.play()
+              : _videoPlayerController.pause();
         });
       });
   }

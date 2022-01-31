@@ -202,6 +202,7 @@ class _SignUpState extends State<SignUp> {
       );
 
   void onSubmit() async {
+    isSubmit = true;
     FocusScope.of(context).requestFocus(FocusNode());
     final currentState = signUpFormKey.currentState;
     final isValid;

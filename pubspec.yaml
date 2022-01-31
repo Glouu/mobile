@@ -34,17 +34,17 @@ dependencies:
   flutter_svg: ^0.22.0
   keyboard_dismisser: ^2.0.0
   intl: ^0.17.0
-  json_annotation: ^4.0.1
+  json_annotation: ^4.3.0
   flutter_secure_storage: ^4.2.1
   fluttertoast: ^8.0.8
   jwt_decode: ^0.3.1
   pull_to_refresh: ^2.0.0
-  camera: ^0.9.3
+  camera: ^0.9.4
   sliding_sheet: ^0.5.0
   video_player: ^2.2.4
   image_picker: ^0.8.4+2
   file_picker: ^4.1.1
-  path_provider: ^2.0.5
+  path_provider: ^2.0.7
   path: ^1.8.0
   flutter_chips_input: ^1.10.0
   flutter_launcher_icons: ^0.9.2
@@ -53,10 +53,13 @@ dependencies:
   story_view: ^0.13.1
   video_compress: ^3.1.0
   numeral: ^1.2.5
+  video_trimmer: ^0.6.0
+  flutter_uploader: ^3.0.0-beta.3
+  flutter_local_notifications: ^9.1.4
 
 dev_dependencies:
   build_runner:
-  json_serializable:
+  json_serializable: ^6.0.1
   flutter_test:
     sdk: flutter
 
